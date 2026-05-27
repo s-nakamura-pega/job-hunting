@@ -1,4 +1,11 @@
-package sn.tools.dom.dto;
+package sn.tools.xml.dom;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -10,12 +17,105 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.TypeInfo;
 import org.w3c.dom.UserDataHandler;
 
+/** org.w3c.dom.Elementクラスをラッパーするクラス */
 public class DomElementWrapper implements Element {
 
+	/** 元となるXMLエレメント */
 	private final Element element;
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param element 元となるXMLエレメント
+	 */
 	public DomElementWrapper(Element element) {
 		this.element = element;
+	}
+
+	/**
+	 * 小要素の内からエレメント要素のリストを取得
+	 * 
+	 * @return エレメント要素のリスト
+	 */
+	public List<Element> getChildElementList() {
+		return getChildElementList(elem -> true);
+	}
+
+	/**
+	 * 小要素の内から名前空間の一致するエレメント要素のリストを取得
+	 * 
+	 * @param namespaceURI 名前空間
+	 * @return エレメント要素のリスト
+	 */
+	public List<Element> getChildElementListNS(String namespaceURI) {
+		return getChildElementList(elem -> Objects.equals(elem.getNamespaceURI(), namespaceURI));
+	}
+
+	/**
+	 * 小要素の内からタグ名の一致するエレメント要素のリストを取得<br>
+	 * 名前空間がある場合は名前空間の指定なしとして、一致するものなしとみなす。
+	 * 
+	 * @param localName タグ名
+	 * @return エレメント要素のリスト
+	 */
+	public List<Element> getChildElementList(String localName) {
+		return getChildElementList(null, localName);
+	}
+
+	/**
+	 * 小要素の内から名前空間とタグ名の一致するエレメント要素のリストを取得
+	 * 
+	 * @param namespaceURI
+	 * @param localName タグ名
+	 * @return エレメント要素のリスト
+	 */
+	public List<Element> getChildElementList(String namespaceURI, String localName) {
+		return getChildElementList(elem -> Objects.equals(elem.getNamespaceURI(), namespaceURI)
+				&& Objects.equals(elem.getLocalName(), localName));
+	}
+
+	/**
+	 * 小要素の内から条件に一致するエレメント要素のリストを取得
+	 * 
+	 * @param predicate 判定処理
+	 * @return エレメント要素のリスト
+	 */
+	public List<Element> getChildElementList(Predicate<Element> predicate) {
+		Objects.requireNonNull(predicate, "predicate must not be null");
+		Function<Node, Optional<Element>> convertNodeFunction = node -> node.getNodeType() == ELEMENT_NODE && predicate.test((Element) node) 
+				? Optional.of((Element) node)
+				: Optional.empty();
+		return getChildNodeList(convertNodeFunction);
+	}
+
+	/**
+	 * 小要素をリストで取得
+	 * 
+	 * @return 小要素のリスト
+	 */
+	public List<Node> getChildNodeList() {
+		Function<Node, Optional<Node>> convertNodeFunction = node -> Optional.of(node);
+		return getChildNodeList(convertNodeFunction);
+	}
+
+	/**
+	 * 各小要素に変換処理を行い、結果をリストで取得
+	 * 
+	 * @param <T> 変換後の型
+	 * @param convertNodeFunction 要素変換処理
+	 * @return 小要素を変換したリスト
+	 */
+	public <T extends Node> List<T> getChildNodeList(Function<Node, Optional<T>> convertNodeFunction) {
+		Objects.requireNonNull(convertNodeFunction, "convertNodeFunction must not be null");
+		List<T> childNodeList = new ArrayList<>();
+		NodeList childNodes = getChildNodes();
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Optional<T> childNodeOpt = convertNodeFunction.apply(childNodes.item(i));
+			if (childNodeOpt.isPresent()) {
+				childNodeList.add(childNodeOpt.get());
+			}
+		}
+		return childNodeList;
 	}
 
 	// TODO 機能追加
