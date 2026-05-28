@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -30,7 +32,7 @@ public class DomElementWrapper implements Element {
 	 * @param element 元となるXMLエレメント
 	 */
 	public DomElementWrapper(Element element) {
-		this.element = element;
+		this.element = Objects.requireNonNull(element, "element must not be null");
 	}
 
 	/**
@@ -77,7 +79,7 @@ public class DomElementWrapper implements Element {
 	/**
 	 * 小要素の内から名前空間とタグ名の一致するエレメント要素のリストを取得
 	 * 
-	 * @param namespaceURI
+	 * @param namespaceURI 名前空間
 	 * @param localName    タグ名
 	 * @return エレメント要素のリスト
 	 */
@@ -89,7 +91,7 @@ public class DomElementWrapper implements Element {
 	/**
 	 * 小要素の内から名前空間とタグ名の一致するエレメント要素のリストを取得
 	 * 
-	 * @param namespaceURI
+	 * @param namespaceURI 名前空間
 	 * @param localName    タグ名
 	 * @return エレメント要素のリスト
 	 */
@@ -105,9 +107,9 @@ public class DomElementWrapper implements Element {
 	 */
 	public List<Element> getChildElementList(Predicate<Element> predicate) {
 		Objects.requireNonNull(predicate, "predicate must not be null");
-		Function<Node, Optional<Element>> convertNodeFunction = node -> node.getNodeType() == ELEMENT_NODE
-				&& predicate.test((Element) node)
-						? Optional.of((Element) node)
+		Function<Node, Optional<Element>> convertNodeFunction = node -> node instanceof Element element
+				&& predicate.test(element)
+						? Optional.of(element)
 						: Optional.empty();
 		return getChildNodeList(convertNodeFunction);
 	}
@@ -118,8 +120,7 @@ public class DomElementWrapper implements Element {
 	 * @return 小要素のリスト
 	 */
 	public List<Node> getChildNodeList() {
-		Function<Node, Optional<Node>> convertNodeFunction = node -> Optional.of(node);
-		return getChildNodeList(convertNodeFunction);
+		return getChildNodeList(node -> Optional.of(node));
 	}
 
 	/**
@@ -141,6 +142,19 @@ public class DomElementWrapper implements Element {
 	 * 
 	 * @param consumer 処理
 	 */
+	public void childElementListForeach(Consumer<Element> consumer) {
+		childNodeListForeach(node -> {
+			if (node instanceof Element element) {
+				consumer.accept(element);
+			}
+		});
+	}
+
+	/**
+	 * 子要素をループ処理する
+	 * 
+	 * @param consumer 処理
+	 */
 	public void childNodeListForeach(Consumer<Node> consumer) {
 		NodeList childNodes = getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
@@ -148,7 +162,124 @@ public class DomElementWrapper implements Element {
 		}
 	}
 
-	// TODO 機能追加
+	/**
+	 * 子要素をこのラッパーでラップしたリストを取得
+	 * 
+	 * @return DomElementWrapper のリスト
+	 */
+	public List<DomElementWrapper> getChildElementWrapperList() {
+		return getChildElementList().stream().map(DomElementWrapper::new).collect(Collectors.toList());
+	}
+
+	/**
+	 * 名前で子要素を1つ取得してラップして返す
+	 */
+	public Optional<DomElementWrapper> getChildElementWrapper(String localName) {
+		return getChildElement(localName).map(DomElementWrapper::new);
+	}
+
+	/**
+	 * 名前空間と名前で子要素を1つ取得してラップして返す
+	 */
+	public Optional<DomElementWrapper> getChildElementWrapper(String namespaceURI, String localName) {
+		return getChildElement(namespaceURI, localName).map(DomElementWrapper::new);
+	}
+
+	/**
+	 * 属性をリストで取得
+	 *
+	 * @param
+	 * @return Attr のリスト
+	 */
+	public List<Attr> getAttributeList(String namespaceURI) {
+		List<Attr> list = new ArrayList<>();
+		attributeListForeach(namespaceURI, (Consumer<Attr>) list::add);
+		return list;
+	}
+
+	/**
+	 * 属性をリストで取得
+	 *
+	 * @return Attr のリスト
+	 */
+	public List<Attr> getAttributeList() {
+		List<Attr> list = new ArrayList<>();
+		getAttributeList(null);
+		return list;
+	}
+
+	/**
+	 * 属性を順に処理する
+	 *
+	 * @param namespaceURI 名前空間
+	 * @param consumer     属性ごとに呼ばれる処理
+	 */
+	public void attributeListForeach(String namespaceURI, Consumer<Attr> consumer) {
+		Objects.requireNonNull(consumer, "consumer must not be null");
+		NamedNodeMap attrs = element.getAttributes();
+		for (int i = 0; i < attrs.getLength(); i++) {
+			Node node = attrs.item(i);
+			if (Objects.equals(namespaceURI, node.getNamespaceURI()) && node instanceof Attr attr) {
+				consumer.accept(attr);
+			}
+		}
+	}
+
+	/**
+	 * 属性を順に処理する
+	 *
+	 * @param consumer 属性ごとに呼ばれる処理
+	 */
+	public void attributeListForeach(Consumer<Attr> consumer) {
+		attributeListForeach(null, consumer);
+	}
+
+	/**
+	 * 属性を順に処理する
+	 *
+	 * @param namespaceURI 名前空間
+	 * @param consumer     属性ごとに呼ばれる処理
+	 */
+	public void attributeListForeach(String namespaceURI, BiConsumer<String, String> biConsumer) {
+		Objects.requireNonNull(biConsumer, "biConsumer must not be null");
+		attributeListForeach(namespaceURI, attr -> biConsumer.accept(attr.getName(), attr.getValue()));
+	}
+
+	/**
+	 * 属性を順に処理する
+	 *
+	 * @param consumer 属性ごとに呼ばれる処理
+	 */
+	public void attributeListForeach(BiConsumer<String, String> biConsumer) {
+		attributeListForeach(null, biConsumer);
+	}
+
+	@Override
+	public String toString() {
+		String name = element.getNodeName();
+		String text = element.getTextContent();
+		if (text == null) {
+			return "DomElementWrapper[" + name + "]";
+		}
+		String shortText = text.length() > 64 ? text.substring(0, 64) + "..." : text;
+		return "DomElementWrapper[" + name + "]:" + shortText;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof DomElementWrapper other) {
+			return Objects.equals(this.element, other.element);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(element);
+	}
 
 	@Override
 	public Node appendChild(Node arg0) throws DOMException {
