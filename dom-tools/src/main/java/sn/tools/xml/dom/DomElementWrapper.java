@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -108,9 +110,8 @@ public class DomElementWrapper implements Element {
 	public List<Element> getChildElementList(Predicate<Element> predicate) {
 		Objects.requireNonNull(predicate, "predicate must not be null");
 		Function<Node, Optional<Element>> convertNodeFunction = node -> node instanceof Element element
-				&& predicate.test(element)
-						? Optional.of(element)
-						: Optional.empty();
+				? Optional.of(element).filter(predicate)
+				: Optional.empty();
 		return getChildNodeList(convertNodeFunction);
 	}
 
@@ -142,12 +143,85 @@ public class DomElementWrapper implements Element {
 	 * 
 	 * @param consumer 処理
 	 */
+	public void childDomElementWrapperListForeach(Consumer<DomElementWrapper> consumer) {
+		childNodeListForeach(node -> {
+			if (node instanceof Element element) {
+				consumer.accept(new DomElementWrapper(element));
+			}
+		});
+	}
+
+	/**
+	 * 子要素をループ処理する
+	 * 
+	 * @param consumer 処理
+	 */
 	public void childElementListForeach(Consumer<Element> consumer) {
 		childNodeListForeach(node -> {
 			if (node instanceof Element element) {
 				consumer.accept(element);
 			}
 		});
+	}
+
+	/**
+	 * 子要素をStream<DomElementWrapper>で取得
+	 * 
+	 * @param predicate フィルター処理
+	 * @return Stream<DomElementWrapper>
+	 */
+	public Stream<DomElementWrapper> childDomElementWrapperStream(Predicate<DomElementWrapper> predicate) {
+		Objects.requireNonNull(predicate, "predicate must not be null");
+		return childDomElementWrapperStream().filter(predicate);
+	}
+
+	/**
+	 * 子要素をStream<DomElementWrapper>で取得
+	 * 
+	 * @return Stream<DomElementWrapper>
+	 */
+	public Stream<DomElementWrapper> childDomElementWrapperStream() {
+		return childElementStream().map(DomElementWrapper::new);
+	}
+
+	/**
+	 * 子要素をStream<Element>で取得
+	 * 
+	 * @param predicate フィルター処理
+	 * @return Stream<Element>
+	 */
+	public Stream<Element> childElementStream(Predicate<Element> predicate) {
+		Objects.requireNonNull(predicate, "predicate must not be null");
+		return childElementStream().filter(predicate);
+	}
+
+	/**
+	 * 子要素をStream<Element>で取得
+	 * 
+	 * @return Stream<Element>
+	 */
+	public Stream<Element> childElementStream() {
+		return childNodeStream(Element.class::isInstance).map(Element.class::cast);
+	}
+
+	/**
+	 * 子要素をStream<Node>で取得
+	 * 
+	 * @param predicate フィルター処理
+	 * @return Stream<Node>
+	 */
+	public Stream<Node> childNodeStream(Predicate<Node> predicate) {
+		return childNodeStream().filter(predicate);
+	}
+
+	/**
+	 * 子要素をStream<Node>で取得
+	 * 
+	 * @return Stream<Node>
+	 */
+	public Stream<Node> childNodeStream() {
+		NodeList childNodes = getChildNodes();
+		return IntStream.range(0, childNodes.getLength()).mapToObj(childNodes::item);
 	}
 
 	/**
@@ -188,7 +262,7 @@ public class DomElementWrapper implements Element {
 	/**
 	 * 属性をリストで取得
 	 *
-	 * @param
+	 * @param namespaceURI 名前空間
 	 * @return Attr のリスト
 	 */
 	public List<Attr> getAttributeList(String namespaceURI) {
@@ -203,9 +277,7 @@ public class DomElementWrapper implements Element {
 	 * @return Attr のリスト
 	 */
 	public List<Attr> getAttributeList() {
-		List<Attr> list = new ArrayList<>();
-		getAttributeList(null);
-		return list;
+		return getAttributeList(null);
 	}
 
 	/**
