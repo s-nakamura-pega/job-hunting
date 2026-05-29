@@ -56,8 +56,9 @@ public class XmlObjectCreator<T> {
         for (Method method : attributeAndTextMethods) {
             InjectXmlAttribute ixa = method.getDeclaredAnnotation(InjectXmlAttribute.class);
             if (ixa != null) {
-                if (element.hasAttributeNS(ixa.namespaceURI(), ixa.value())) {
-                    injectStringValues(t, method, element.getAttributeNS(ixa.namespaceURI(), ixa.value()));
+                String namespaceURI = ixa.namespaceURI().isBlank() ? null : ixa.namespaceURI();
+                if (element.hasAttributeNS(namespaceURI, ixa.value())) {
+                    injectStringValues(t, method, element.getAttributeNS(namespaceURI, ixa.value()));
                 }
             } else {
                 injectStringValues(t, method, element.getTextContent().trim());
@@ -67,7 +68,8 @@ public class XmlObjectCreator<T> {
             for (Method method : elementMethods) {
                 InjectXmlElement ixe = method.getDeclaredAnnotation(InjectXmlElement.class);
                 if (ixe != null) {
-                    if (Objects.equals(elem.getNamespaceURI(), ixe.namespaceURI())
+                    String namespaceURI = ixe.namespaceURI().isBlank() ? null : ixe.namespaceURI();
+                    if (Objects.equals(elem.getNamespaceURI(), namespaceURI)
                             && Objects.equals(elem.getLocalName(), ixe.value())) {
                         injectElementValues(t, method, elem);
                     }
