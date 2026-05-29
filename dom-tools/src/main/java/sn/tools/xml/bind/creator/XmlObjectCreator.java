@@ -13,15 +13,15 @@ import org.w3c.dom.Element;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlElement;
 import sn.tools.xml.bind.annotation.InjectXmlTextContent;
-import sn.tools.xml.bind.creator.XmlObjectCreator.ConstructorArgument;
 import sn.tools.xml.dom.DomElementWrapper;
 
-public class XmlObjectCreator<T> extends ArrayList<ConstructorArgument<?>> {
+public class XmlObjectCreator<T> {
 
     private final DomElementWrapper element;
     private final Class<T> clazz;
     private final List<Method> attributeAndTextMethods = new ArrayList<>();
     private final List<Method> elementMethods = new ArrayList<>();
+    private final List<ConstructorArgument<?>> constructorArgs = new ArrayList<>();
 
     public XmlObjectCreator(Element element, Class<T> clazz) {
         this.element = new DomElementWrapper(element);
@@ -39,17 +39,14 @@ public class XmlObjectCreator<T> extends ArrayList<ConstructorArgument<?>> {
 
     public T create() {
         try {
-            T t = null;
-            List<Class<?>> constructorArgClassList = new ArrayList<Class<?>>();
-            List<Object> constructorArgvalues = new ArrayList<Object>();
-            for (ConstructorArgument<?> arg : this) {
-                constructorArgClassList.add(arg.clazz());
-                constructorArgvalues.add(arg.value());
-            }
-            Constructor<T> constructor = clazz.getConstructor(constructorArgClassList.toArray(Class<?>[]::new));
-            t = constructor.newInstance(constructorArgvalues.toArray());
-            injectValues(t);
-            return t;
+            Constructor<T> constructor = clazz.getConstructor(
+                    constructorArgs.stream().map(ConstructorArgument::clazz).toArray(Class<?>[]::new));
+            Object[] values = constructorArgs.stream()
+                    .map(ConstructorArgument::value)
+                    .toArray();
+            T instance = constructor.newInstance(values);
+            injectValues(instance);
+            return instance;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -58,13 +55,11 @@ public class XmlObjectCreator<T> extends ArrayList<ConstructorArgument<?>> {
     private void injectValues(T t) {
         for (Method method : attributeAndTextMethods) {
             InjectXmlAttribute ixa = method.getDeclaredAnnotation(InjectXmlAttribute.class);
-            InjectXmlTextContent ixt = method.getDeclaredAnnotation(InjectXmlTextContent.class);
             if (ixa != null) {
                 if (element.hasAttributeNS(ixa.namespaceURI(), ixa.value())) {
                     injectStringValues(t, method, element.getAttributeNS(ixa.namespaceURI(), ixa.value()));
                 }
-            }
-            if (ixt != null) {
+            } else {
                 injectStringValues(t, method, element.getTextContent().trim());
             }
         }
@@ -104,6 +99,10 @@ public class XmlObjectCreator<T> extends ArrayList<ConstructorArgument<?>> {
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public <R> boolean addConstructorArgument(Class<R> clazz, R value) {
+        return constructorArgs.add(new ConstructorArgument<>(clazz, value));
     }
 
     public static record ConstructorArgument<R>(Class<R> clazz, R value) {
