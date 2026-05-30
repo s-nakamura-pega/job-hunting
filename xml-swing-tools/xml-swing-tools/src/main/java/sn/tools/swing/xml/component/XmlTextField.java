@@ -1,11 +1,30 @@
 package sn.tools.swing.xml.component;
 
+import java.lang.reflect.Field;
+
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
+
+import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.XmlObject;
 
 @XmlObject("text-field")
-public class XmlTextField extends JTextField implements XmlComponent {
+public class XmlTextField extends JTextField implements XmlTextComponent {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	@InjectXmlAttribute("h-align")
+	public void injectHorizontalAlignment(String alignment) {
+		try {
+			Field field = JTextField.class.getField(alignment.toUpperCase());
+			setHorizontalAlignment(field.getInt(null));
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new IllegalArgumentException("Invalid alignment: " + alignment, e);
+		}
+	}
+
+	public JTextComponent injectTargetTextComponent() {
+		return this;
+	}
+
 }

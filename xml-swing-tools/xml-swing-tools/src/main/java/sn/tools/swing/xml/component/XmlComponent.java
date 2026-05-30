@@ -1,112 +1,63 @@
 package sn.tools.swing.xml.component;
 
 import java.awt.Dimension;
-import java.lang.reflect.Field;
-
-import javax.swing.AbstractButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.text.JTextComponent;
-
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 
 public interface XmlComponent {
 
+	/**
+	 * DIを行うコンポーネント
+	 * 
+	 * @return DIを行うコンポーネント
+	 */
+	JComponent injectTargetComponent();
+
 	@InjectXmlAttribute("width")
-	default void setWidth(String width) {
-		if (this instanceof JComponent comp) {
-			Dimension preferredSize = comp.getPreferredSize();
-			comp.setPreferredSize(new Dimension(Integer.parseInt(width), preferredSize.height));
-		}
+	default void injectWidth(String width) {
+		JComponent comp = injectTargetComponent();
+		Dimension preferredSize = comp.getPreferredSize();
+		comp.setPreferredSize(new Dimension(Integer.parseInt(width), preferredSize.height));
 	}
 
 	@InjectXmlAttribute("height")
-	default void setHeight(String height) {
-		if (this instanceof JComponent comp) {
-			Dimension preferredSize = comp.getPreferredSize();
-			comp.setPreferredSize(new Dimension(preferredSize.width, Integer.parseInt(height)));
-		}
+	default void injectHeight(String height) {
+		JComponent comp = injectTargetComponent();
+		Dimension preferredSize = comp.getPreferredSize();
+		comp.setPreferredSize(new Dimension(preferredSize.width, Integer.parseInt(height)));
 	}
 
-	@InjectXmlAttribute("value")
-	default void setValue(String value) {
-		if (this instanceof JTextComponent comp) {
-			comp.setText(value);
-		} else if (this instanceof AbstractButton comp) {
-			comp.setText(value);
-		} else if (this instanceof JLabel comp) {
-			comp.setText(value);
-		} else if (this instanceof AbstractButton btn) {
-			btn.setSelected(Boolean.parseBoolean(value));
-		}
+	@InjectXmlAttribute("min-width")
+	default void injectMinWidth(String width) {
+		JComponent comp = injectTargetComponent();
+		Dimension minSize = comp.getMinimumSize();
+		comp.setMinimumSize(new Dimension(Integer.parseInt(width), minSize.height));
 	}
 
-	@InjectXmlAttribute("label")
-	default void setLabel(String label) {
-		setValue(label);
+	@InjectXmlAttribute("max-height")
+	default void injectMinHeight(String height) {
+		JComponent comp = injectTargetComponent();
+		Dimension minSize = comp.getMinimumSize();
+		comp.setMinimumSize(new Dimension(minSize.width, Integer.parseInt(height)));
 	}
 
-	@InjectXmlAttribute("selected")
-	default void setSelected(String selected) {
-		setValue(selected);
+	@InjectXmlAttribute("max-width")
+	default void injectMaxWidth(String width) {
+		JComponent comp = injectTargetComponent();
+		Dimension maxSize = comp.getMaximumSize();
+		comp.setMaximumSize(new Dimension(Integer.parseInt(width), maxSize.height));
 	}
 
-	@InjectXmlAttribute("checked")
-	default void setChecked(String checked) {
-		setValue(checked);
+	@InjectXmlAttribute("min-height")
+	default void injectMaxHeight(String height) {
+		JComponent comp = injectTargetComponent();
+		Dimension maxSize = comp.getMaximumSize();
+		comp.setMaximumSize(new Dimension(maxSize.width, Integer.parseInt(height)));
 	}
 
 	@InjectXmlAttribute("tooltip")
-	default void setTooltip(String tooltip) {
-		if (this instanceof JComponent comp) {
-			comp.setToolTipText(tooltip);
-		}
-	}
-
-	@InjectXmlAttribute("h-align")
-	default void setHorizontalAlignment(String alignment) {
-		if (this instanceof JTextField comp) {
-			try {
-				Field field = JTextField.class.getField(alignment.toUpperCase());
-				comp.setHorizontalAlignment(field.getInt(null));
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Invalid alignment: " + alignment, e);
-			}
-		} else if (this instanceof JLabel comp) {
-			try {
-				Field field = JLabel.class.getField(alignment.toUpperCase());
-				comp.setHorizontalAlignment(field.getInt(null));
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Invalid alignment: " + alignment, e);
-			}
-		} else if (this instanceof AbstractButton comp) {
-			try {
-				Field field = AbstractButton.class.getField(alignment.toUpperCase());
-				comp.setHorizontalAlignment(field.getInt(null));
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Invalid alignment: " + alignment, e);
-			}
-		}
-	}
-
-	@InjectXmlAttribute("v-align")
-	default void setVerticalAlignment(String alignment) {
-		if (this instanceof JLabel comp) {
-			try {
-				Field field = JLabel.class.getField(alignment.toUpperCase());
-				comp.setVerticalAlignment(field.getInt(null));
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Invalid vertical alignment: " + alignment, e);
-			}
-		} else if (this instanceof AbstractButton comp) {
-			try {
-				Field field = AbstractButton.class.getField(alignment.toUpperCase());
-				comp.setVerticalAlignment(field.getInt(null));
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Invalid vertical alignment: " + alignment, e);
-			}
-		}
+	default void injectTooltip(String tooltip) {
+		injectTargetComponent().setToolTipText(tooltip);
 	}
 
 }
