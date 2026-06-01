@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
@@ -37,12 +38,14 @@ public interface XmlTextComponent extends XmlComponent {
 	@InjectXmlAttribute("undoable")
 	default void injectUndoable(String value) {
 		if (Boolean.parseBoolean(value)) {
-			setUndo(injectTargetTextComponent());
+			UndoManager undoManager = setUndo(injectTargetTextComponent());
+			SwingUtilities.invokeLater(undoManager::discardAllEdits);
 		}
 	}
 
-	public static void setUndo(JTextComponent text) {
+	public static UndoManager setUndo(JTextComponent text) {
 		UndoManager undoManager = new UndoManager();
+		text.putClientProperty("undoManager", undoManager);
 		text.getDocument().addUndoableEditListener(new UndoableEditListener() {
 			@Override
 			public void undoableEditHappened(UndoableEditEvent e) {
@@ -61,6 +64,7 @@ public interface XmlTextComponent extends XmlComponent {
 			}
 		};
 		KeyUtils.setKeyAndAction(text, "Redo", redo, FocusTargetCondition.COMPONENT, KeyEvent.VK_Y, KeyModifiers.CTRL);
+		return undoManager;
 	}
 
 }

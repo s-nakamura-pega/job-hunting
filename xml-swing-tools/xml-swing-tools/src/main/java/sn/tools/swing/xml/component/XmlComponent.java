@@ -34,7 +34,7 @@ public interface XmlComponent {
 		comp.setMinimumSize(new Dimension(Integer.parseInt(width), minSize.height));
 	}
 
-	@InjectXmlAttribute("max-height")
+	@InjectXmlAttribute("min-height")
 	default void injectMinHeight(String height) {
 		JComponent comp = injectTargetComponent();
 		Dimension minSize = comp.getMinimumSize();
@@ -48,7 +48,7 @@ public interface XmlComponent {
 		comp.setMaximumSize(new Dimension(Integer.parseInt(width), maxSize.height));
 	}
 
-	@InjectXmlAttribute("min-height")
+	@InjectXmlAttribute("max-height")
 	default void injectMaxHeight(String height) {
 		JComponent comp = injectTargetComponent();
 		Dimension maxSize = comp.getMaximumSize();
