@@ -5,7 +5,9 @@ import javax.swing.JButton;
 
 public class XmlActionButton extends JButton implements XmlButtonComponent {
 
-    @Override
+    private static final long serialVersionUID = 1L;
+
+	@Override
     public AbstractButton injectTargetButtonComponent() {
         return this;
     }
