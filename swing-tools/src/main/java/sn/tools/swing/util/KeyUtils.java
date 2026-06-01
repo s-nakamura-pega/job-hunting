@@ -14,27 +14,14 @@ import sn.tools.swing.util.definition.KeyModifiers;
 public interface KeyUtils {
 
     public static void setKeyAndAction(JComponent component, Object actionMapKey, ActionListener action,
-            FocusTargetCondition targetCondition, int keyCode,
-            int modifiers) {
-        setKey(component, actionMapKey, targetCondition, keyCode, modifiers);
-        setAction(component, actionMapKey, action);
-    }
-
-    public static void setKeyAndAction(JComponent component, Object actionMapKey, ActionListener action,
-            FocusTargetCondition targetCondition, int keyCode,
-            KeyModifiers... modifiers) {
-        setKeyAndAction(component, actionMapKey, action, targetCondition, keyCode, KeyModifiers.of(modifiers));
-    }
-
-    public static void setKey(JComponent component, Object actionMapKey, FocusTargetCondition targetCondition,
-            int keyCode, int modifiers) {
-        KeyStroke ks = KeyStroke.getKeyStroke(keyCode, modifiers);
-        targetCondition.getTargetList().forEach(cond -> component.getInputMap(cond).put(ks, actionMapKey));
+            FocusTargetCondition targetCondition, int keyCode, KeyModifiers... modifiers) {
+        setKeyAndAction(component, actionMapKey, action, targetCondition, keyCode, modifiers);
     }
 
     public static void setKey(JComponent component, Object actionMapKey, FocusTargetCondition targetCondition,
             int keyCode, KeyModifiers... modifiers) {
-        setKey(component, actionMapKey, targetCondition, keyCode, KeyModifiers.of(modifiers));
+    	KeyStroke ks = KeyStroke.getKeyStroke(keyCode, KeyModifiers.of(modifiers));
+        targetCondition.getTargetList().forEach(cond -> component.getInputMap(cond).put(ks, actionMapKey));
     }
 
     public static void setAction(JComponent component, Object actionMapKey, ActionListener action) {
@@ -47,26 +34,14 @@ public interface KeyUtils {
     }
 
     public static void removeKeyAndAction(JComponent component, Object actionMapKey,
-            FocusTargetCondition targetCondition, int keyCode,
-            KeyModifiers... modifiers) {
-        removeKey(component, targetCondition, keyCode, modifiers);
-        removeAction(component, actionMapKey);
-    }
-
-    public static void removeKeyAndAction(JComponent component, Object actionMapKey,
-            FocusTargetCondition targetCondition, int keyCode, int modifiers) {
+            FocusTargetCondition targetCondition, int keyCode, KeyModifiers... modifiers) {
         removeKey(component, targetCondition, keyCode, modifiers);
         removeAction(component, actionMapKey);
     }
 
     public static void removeKey(JComponent component, FocusTargetCondition targetCondition, int keyCode,
             KeyModifiers... modifiers) {
-        removeKey(component, targetCondition, keyCode, KeyModifiers.of(modifiers));
-    }
-
-    public static void removeKey(JComponent component, FocusTargetCondition targetCondition, int keyCode,
-            int modifiers) {
-        KeyStroke ks = KeyStroke.getKeyStroke(keyCode, modifiers);
+        KeyStroke ks = KeyStroke.getKeyStroke(keyCode, KeyModifiers.of(modifiers));
         targetCondition.getTargetList().forEach(cond -> component.getInputMap(cond).remove(ks));
     }
 

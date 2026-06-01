@@ -10,6 +10,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 public class PopupTriggerMouseAdapter extends MouseAdapter {
+
     private final JPopupMenu popupMenu;
 
     public PopupTriggerMouseAdapter(JPopupMenu popupMenu) {
