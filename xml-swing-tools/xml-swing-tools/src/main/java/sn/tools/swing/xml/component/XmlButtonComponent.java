@@ -42,9 +42,14 @@ public interface XmlButtonComponent extends XmlComponent {
 		injectTargetButtonComponent().setText(label);
 	}
 
+	@InjectXmlAttribute("selected")
+	default void injectSelected(String isSelected) {
+		injectTargetButtonComponent().setSelected(Boolean.parseBoolean(isSelected));
+	}
+
 	@InjectXmlAttribute("value")
 	default void injectValue(String value) {
-		injectTargetButtonComponent().setSelected(Boolean.parseBoolean(value));
+		injectTargetButtonComponent().setActionCommand(value);
 	}
 
 }
