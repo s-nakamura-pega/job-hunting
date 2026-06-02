@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
+import sn.tools.xml.bind.annotation.InjectXmlTextContent;
 
 public interface XmlButtonComponent extends XmlComponent {
 
@@ -37,7 +38,7 @@ public interface XmlButtonComponent extends XmlComponent {
 		}
 	}
 
-	@InjectXmlAttribute("label")
+	@InjectXmlTextContent
 	default void injectLabel(String label) {
 		injectTargetButtonComponent().setText(label);
 	}

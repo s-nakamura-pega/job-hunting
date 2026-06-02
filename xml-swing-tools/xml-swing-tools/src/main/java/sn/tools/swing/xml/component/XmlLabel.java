@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
+import sn.tools.xml.bind.annotation.InjectXmlTextContent;
 
 public class XmlLabel extends JLabel implements XmlComponent {
 
@@ -31,7 +32,7 @@ public class XmlLabel extends JLabel implements XmlComponent {
 		}
 	}
 
-	@InjectXmlAttribute("label")
+	@InjectXmlTextContent
 	public void injectLabel(String label) {
 		setText(label);
 	}
