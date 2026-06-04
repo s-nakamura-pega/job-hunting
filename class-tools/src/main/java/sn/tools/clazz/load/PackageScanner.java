@@ -11,10 +11,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.stream.Stream;
+
+import static sn.tools.function.uncheck.Uncheck.wrapFunction;
+import static sn.tools.file.jar.JarFiles.walk;
 
 public class PackageScanner {
 
@@ -28,84 +31,56 @@ public class PackageScanner {
 		if (packageName == null || packageName.isEmpty() || predicate == null) {
 			return classList;
 		}
+
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		String path = packageName.replace('.', '/');
 		Enumeration<URL> resources = classLoader.getResources(path);
+
 		while (resources.hasMoreElements()) {
 			URL resource = resources.nextElement();
 			String protocol = resource.getProtocol();
 			if ("file".equals(protocol)) {
 				String filePath = URLDecoder.decode(resource.getFile(), StandardCharsets.UTF_8);
-				Path startPath = Paths.get(filePath);
-				classList.addAll(findClassesFromDirectory(startPath, packageName, predicate));
+				classList.addAll(findClassesFromDirectory(Paths.get(filePath), packageName, predicate, classLoader));
 			} else if ("jar".equals(protocol)) {
-				classList.addAll(findClassesFromJar(resource, packageName, predicate));
+				classList.addAll(findClassesFromJar(resource, packageName, predicate, classLoader));
 			}
 		}
 		return classList;
 	}
 
-	/**
-	 * 通常のディレクトリからクラスを探索
-	 */
 	private static List<Class<?>> findClassesFromDirectory(Path startPath, String packageName,
-			Predicate<Class<?>> predicate) throws IOException, ClassNotFoundException {
-		List<Class<?>> classList = new ArrayList<>();
+			Predicate<Class<?>> predicate, ClassLoader classLoader) throws IOException {
 		if (!Files.exists(startPath)) {
-			return classList;
+			return List.of();
 		}
+		String separator = startPath.getFileSystem().getSeparator();
 		try (Stream<Path> walk = Files.walk(startPath)) {
-			walk.filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".class")).forEach(path -> {
-				try {
-					Path relativePath = startPath.relativize(path);
-					String subPackageAndClassName = relativePath.toString()
-							.replace(startPath.getFileSystem().getSeparator(), ".")
-							.substring(0, relativePath.toString().length() - 6);
-
-					String className = packageName
-							+ (subPackageAndClassName.isEmpty() ? "" : "." + subPackageAndClassName);
-					Class<?> clazz = Class.forName(className);
-
-					if (predicate.test(clazz)) {
-						classList.add(clazz);
-					}
-				} catch (ClassNotFoundException e) {
-					throw new IllegalStateException(e);
-				}
-			});
-		} catch (IllegalStateException e) {
-			if (e.getCause() instanceof ClassNotFoundException) {
-				throw (ClassNotFoundException) e.getCause();
-			}
-			throw e;
+			return walk.filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".class")).map(path -> {
+				Path relativePath = startPath.relativize(path);
+				String subPackageAndClassName = relativePath.toString().replace(separator, ".").substring(0,
+						relativePath.toString().length() - 6);
+				return packageName + (subPackageAndClassName.isEmpty() ? "" : "." + subPackageAndClassName);
+			}).map(getLoadClassFunction(classLoader)).filter(predicate).toList();
 		}
-		return classList;
 	}
 
-	/**
-	 * JARファイルからクラスを探索
-	 */
-	private static List<Class<?>> findClassesFromJar(URL jarUrl, String packageName, Predicate<Class<?>> predicate)
-			throws IOException, ClassNotFoundException {
-		List<Class<?>> classList = new ArrayList<>();
+	private static List<Class<?>> findClassesFromJar(URL jarUrl, String packageName, Predicate<Class<?>> predicate,
+			ClassLoader classLoader) throws IOException {
 		String packagePathPrefix = packageName.replace('.', '/') + "/";
 		JarURLConnection jarURLConnection = (JarURLConnection) jarUrl.openConnection();
-		try (JarFile jarFile = jarURLConnection.getJarFile()) {
-			Enumeration<JarEntry> entries = jarFile.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				String entryName = entry.getName();
-				if (entryName.startsWith(packagePathPrefix) && entryName.endsWith(".class")) {
-					String className = entryName.substring(0, entryName.length() - 6).replace('/', '.');
-					Class<?> clazz = Class.forName(className);
-
-					if (predicate.test(clazz)) {
-						classList.add(clazz);
-					}
-				}
-			}
+		Path jarPath = Paths.get(jarURLConnection.getJarFileURL().getPath());
+		try (Stream<JarEntry> walk = walk(jarPath)) {
+			return walk.filter(entry -> !entry.isDirectory()).map(JarEntry::getName)
+					.filter(name -> name.startsWith(packagePathPrefix) && name.endsWith(".class"))
+					.map(name -> name.substring(0, name.length() - 6).replace('/', '.'))
+					.map(getLoadClassFunction(classLoader)).filter(predicate).toList();
 		}
-		return classList;
+	}
+
+	// クラス初期化を防ぐためのブリッジメソッド
+	private static Function<String, Class<?>> getLoadClassFunction(ClassLoader classLoader) {
+		return wrapFunction(className -> Class.forName(className, false, classLoader));
 	}
 
 }
