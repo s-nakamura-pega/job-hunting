@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 public @interface InjectXmlAttribute {
 
     String namespaceURI() default "";
-    String value();
+    String[] value();
 
 }

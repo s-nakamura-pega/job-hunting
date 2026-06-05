@@ -31,11 +31,9 @@ public class PackageScanner {
 		if (packageName == null || packageName.isEmpty() || predicate == null) {
 			return classList;
 		}
-
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		String path = packageName.replace('.', '/');
 		Enumeration<URL> resources = classLoader.getResources(path);
-
 		while (resources.hasMoreElements()) {
 			URL resource = resources.nextElement();
 			String protocol = resource.getProtocol();

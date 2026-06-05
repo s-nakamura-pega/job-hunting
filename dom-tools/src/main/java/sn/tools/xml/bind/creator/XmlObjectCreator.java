@@ -57,25 +57,31 @@ public class XmlObjectCreator<T> {
             InjectXmlAttribute ixa = method.getDeclaredAnnotation(InjectXmlAttribute.class);
             if (ixa != null) {
                 String namespaceURI = ixa.namespaceURI().isBlank() ? null : ixa.namespaceURI();
-                if (element.hasAttributeNS(namespaceURI, ixa.value())) {
-                    injectStringValues(t, method, element.getAttributeNS(namespaceURI, ixa.value()));
-                }
+				for (String name : ixa.value()) {
+					if (element.hasAttributeNS(namespaceURI, name)) {
+						injectStringValues(t, method, element.getAttributeNS(namespaceURI, name));
+						break;
+					}
+				}
             } else {
                 injectStringValues(t, method, element.getTextContent().trim());
             }
         }
-        Consumer<Element> consumer = elem -> {
-            for (Method method : elementMethods) {
-                InjectXmlElement ixe = method.getDeclaredAnnotation(InjectXmlElement.class);
-                if (ixe != null) {
-                    String namespaceURI = ixe.namespaceURI().isBlank() ? null : ixe.namespaceURI();
-                    if (Objects.equals(elem.getNamespaceURI(), namespaceURI)
-                            && Objects.equals(elem.getLocalName(), ixe.value())) {
-                        injectElementValues(t, method, elem);
-                    }
-                }
-            }
-        };
+		Consumer<Element> consumer = elem -> {
+			for (Method method : elementMethods) {
+				InjectXmlElement ixe = method.getDeclaredAnnotation(InjectXmlElement.class);
+				if (ixe != null) {
+					String namespaceURI = ixe.namespaceURI().isBlank() ? null : ixe.namespaceURI();
+					for (String name : ixe.value()) {
+						if (Objects.equals(elem.getNamespaceURI(), namespaceURI)
+								&& Objects.equals(elem.getLocalName(), name)) {
+							injectElementValues(t, method, elem);
+							break;
+						}
+					}
+				}
+			}
+		};
         element.childElementListForeach(consumer);
     }
 

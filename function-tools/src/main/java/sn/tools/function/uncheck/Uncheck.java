@@ -11,12 +11,12 @@ public class Uncheck {
 		});
 	}
 
-	public static Runnable wrapRunnable(ThrowableRunnable runnable, Consumer<Exception> consumer) {
+	public static Runnable wrapRunnable(ThrowableRunnable runnable, VoidExceptionHandler handler) {
 		return () -> {
 			try {
 				runnable.run();
 			} catch (Exception e) {
-				consumer.accept(e);
+				handler.execute(e);
 			}
 		};
 	}
@@ -28,13 +28,12 @@ public class Uncheck {
 		});
 	}
 
-	public static <R> Supplier<R> wrapSupplier(ThrowableSupplier<R> supplier, Consumer<Exception> consumer) {
+	public static <R> Supplier<R> wrapSupplier(ThrowableSupplier<R> supplier, ExceptionHandler<R> handler) {
 		return () -> {
 			try {
 				return supplier.get();
 			} catch (Exception e) {
-				consumer.accept(e);
-				return null;
+				return handler.execute(e);
 			}
 		};
 	}
@@ -46,12 +45,12 @@ public class Uncheck {
 		});
 	}
 
-	public static <T> Consumer<T> wrapConsumer(ThrowableConsumer<T> consumer, Consumer<Exception> exceptionConsumer) {
+	public static <T> Consumer<T> wrapConsumer(ThrowableConsumer<T> consumer, VoidExceptionHandler handler) {
 		return t -> {
 			try {
 				consumer.accept(t);
 			} catch (Exception e) {
-				exceptionConsumer.accept(e);
+				handler.execute(e);
 			}
 		};
 	}
@@ -64,12 +63,12 @@ public class Uncheck {
 	}
 
 	public static <T, U> BiConsumer<T, U> wrapBiConsumer(ThrowableBiConsumer<T, U> consumer,
-			Consumer<Exception> exceptionConsumer) {
+			VoidExceptionHandler handler) {
 		return (t, u) -> {
 			try {
 				consumer.accept(t, u);
 			} catch (Exception e) {
-				exceptionConsumer.accept(e);
+				handler.execute(e);
 			}
 		};
 	}
@@ -81,13 +80,12 @@ public class Uncheck {
 		});
 	}
 
-	public static <T, R> Function<T, R> wrapFunction(ThrowableFunction<T, R> function, Consumer<Exception> consumer) {
+	public static <T, R> Function<T, R> wrapFunction(ThrowableFunction<T, R> function, ExceptionHandler<R> handler) {
 		return t -> {
 			try {
 				return function.apply(t);
 			} catch (Exception e) {
-				consumer.accept(e);
-				return null;
+				return handler.execute(e);
 			}
 		};
 	}
@@ -100,13 +98,12 @@ public class Uncheck {
 	}
 
 	public static <T, U, R> BiFunction<T, U, R> wrapBiFunction(ThrowableBiFunction<T, U, R> bifunction,
-			Consumer<Exception> consumer) {
+			ExceptionHandler<R> handler) {
 		return (t, u) -> {
 			try {
 				return bifunction.apply(t, u);
 			} catch (Exception e) {
-				consumer.accept(e);
-				return null;
+				return handler.execute(e);
 			}
 		};
 	}
@@ -118,13 +115,12 @@ public class Uncheck {
 		});
 	}
 
-	public static <T> Predicate<T> wrapPredicate(ThrowablePredicate<T> predicate, Consumer<Exception> consumer) {
+	public static <T> Predicate<T> wrapPredicate(ThrowablePredicate<T> predicate, ExceptionHandler<Boolean> handler) {
 		return t -> {
 			try {
 				return predicate.test(t);
 			} catch (Exception e) {
-				consumer.accept(e);
-				return false;
+				return handler.execute(e);
 			}
 		};
 	}
@@ -137,13 +133,12 @@ public class Uncheck {
 	}
 
 	public static <T, U> BiPredicate<T, U> wrapBiPredicate(ThrowableBiPredicate<T, U> predicate,
-			Consumer<Exception> consumer) {
+			ExceptionHandler<Boolean> handler) {
 		return (t, u) -> {
 			try {
 				return predicate.test(t, u);
 			} catch (Exception e) {
-				consumer.accept(e);
-				return false;
+				return handler.execute(e);
 			}
 		};
 	}
@@ -188,4 +183,15 @@ public class Uncheck {
 	public interface ThrowableBiPredicate<T, U> {
 		boolean test(T t, U u) throws Exception;
 	}
+
+	@FunctionalInterface
+	public interface ExceptionHandler<R> {
+		R execute(Exception e);
+	}
+
+	@FunctionalInterface
+	public interface VoidExceptionHandler {
+	    void execute(Exception e);
+	}
+
 }
