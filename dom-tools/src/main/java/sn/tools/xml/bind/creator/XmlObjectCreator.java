@@ -1,15 +1,18 @@
 package sn.tools.xml.bind.creator;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-
 import org.w3c.dom.Element;
-
+import sn.tools.clazz.exception.ExceptionUtils;
+import sn.tools.function.uncheck.Uncheck;
+import sn.tools.function.uncheck.Uncheck.ExceptionHandler;
+import sn.tools.function.uncheck.Uncheck.ThrowableRunnable;
+import sn.tools.function.uncheck.Uncheck.ThrowableSupplier;
+import sn.tools.function.uncheck.Uncheck.VoidExceptionHandler;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlElement;
 import sn.tools.xml.bind.annotation.InjectXmlTextContent;
@@ -37,20 +40,20 @@ public class XmlObjectCreator<T> {
         }
     }
 
-    public T create() {
-        try {
-            Constructor<T> constructor = clazz.getConstructor(
-                    constructorArgs.stream().map(ConstructorArgument::clazz).toArray(Class<?>[]::new));
-            Object[] values = constructorArgs.stream()
-                    .map(ConstructorArgument::value)
-                    .toArray();
-            T instance = constructor.newInstance(values);
-            injectValues(instance);
-            return instance;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public T create() {
+		ThrowableSupplier<T> supplier = () -> {
+			Constructor<T> constructor = clazz
+					.getConstructor(constructorArgs.stream().map(ConstructorArgument::clazz).toArray(Class<?>[]::new));
+			Object[] values = constructorArgs.stream().map(ConstructorArgument::value).toArray();
+			T instance = constructor.newInstance(values);
+			injectValues(instance);
+			return instance;
+		};
+		ExceptionHandler<T> handler = e -> {
+			throw new RuntimeException(ExceptionUtils.getRootCause(e));
+		};
+		return Uncheck.wrapSupplier(supplier, handler).get();
+	}
 
     private void injectValues(T t) {
         for (Method method : attributeAndTextMethods) {
@@ -85,29 +88,29 @@ public class XmlObjectCreator<T> {
         element.childElementListForeach(consumer);
     }
 
-    private void injectStringValues(T t, Method method, String value) {
-        Class<?>[] argsClasses = method.getParameterTypes();
-        if (argsClasses.length != 1 || !String.class.equals(argsClasses[0])) {
-            throw new IllegalArgumentException("属性値はString型で受け取る必要があります");
-        }
-        try {
-            method.invoke(t, value);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	private void injectStringValues(T t, Method method, String value) {
+		Class<?>[] argsClasses = method.getParameterTypes();
+		if (argsClasses.length != 1 || !String.class.equals(argsClasses[0])) {
+			throw new IllegalArgumentException("属性値はString型で受け取る必要があります");
+		}
+		ThrowableRunnable runnable = () -> method.invoke(t, value);
+		VoidExceptionHandler handler = e -> {
+			throw new RuntimeException(ExceptionUtils.getRootCause(e));
+		};
+		Uncheck.wrapRunnable(runnable, handler).run();
+	}
 
-    private void injectElementValues(T t, Method method, Element element) {
-        Class<?>[] argsClasses = method.getParameterTypes();
-        if (argsClasses.length != 1 || !Element.class.equals(argsClasses[0])) {
-            throw new IllegalArgumentException("要素値はElement型で受け取る必要があります");
-        }
-        try {
-            method.invoke(t, element);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	private void injectElementValues(T t, Method method, Element element) {
+		Class<?>[] argsClasses = method.getParameterTypes();
+		if (argsClasses.length != 1 || !Element.class.equals(argsClasses[0])) {
+			throw new IllegalArgumentException("要素値はElement型で受け取る必要があります");
+		}
+		ThrowableRunnable runnable = () -> method.invoke(t, element);
+		VoidExceptionHandler handler = e -> {
+			throw new RuntimeException(ExceptionUtils.getRootCause(e));
+		};
+		Uncheck.wrapRunnable(runnable, handler).run();
+	}
 
     public <R> boolean addConstructorArgument(Class<R> clazz, R value) {
         return constructorArgs.add(new ConstructorArgument<>(clazz, value));
