@@ -1,34 +1,31 @@
 package sn.tools.xml.bind.creator;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.w3c.dom.Element;
+
+import sn.tools.clazz.creator.AbstractObjectCreator;
 import sn.tools.clazz.exception.ExceptionUtils;
 import sn.tools.function.uncheck.Uncheck;
-import sn.tools.function.uncheck.Uncheck.ExceptionHandler;
 import sn.tools.function.uncheck.Uncheck.ThrowableRunnable;
-import sn.tools.function.uncheck.Uncheck.ThrowableSupplier;
 import sn.tools.function.uncheck.Uncheck.VoidExceptionHandler;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlElement;
 import sn.tools.xml.bind.annotation.InjectXmlTextContent;
 import sn.tools.xml.dom.DomElementWrapper;
 
-public class XmlObjectCreator<T> {
+public class XmlObjectCreator<T> extends AbstractObjectCreator<T>{
 
     private final DomElementWrapper element;
-    private final Class<T> clazz;
     private final List<Method> attributeAndTextMethods = new ArrayList<>();
     private final List<Method> elementMethods = new ArrayList<>();
-    private final List<ConstructorArgument<?>> constructorArgs = new ArrayList<>();
 
     public XmlObjectCreator(Element element, Class<T> clazz) {
-        this.element = new DomElementWrapper(element);
-        this.clazz = clazz;
+        super(clazz);
+    	this.element = new DomElementWrapper(element);
         for (Method method : clazz.getMethods()) {
             if (method.isAnnotationPresent(InjectXmlAttribute.class) ||
                     method.isAnnotationPresent(InjectXmlTextContent.class)) {
@@ -40,19 +37,9 @@ public class XmlObjectCreator<T> {
         }
     }
 
-	public T create() {
-		ThrowableSupplier<T> supplier = () -> {
-			Constructor<T> constructor = clazz
-					.getConstructor(constructorArgs.stream().map(ConstructorArgument::clazz).toArray(Class<?>[]::new));
-			Object[] values = constructorArgs.stream().map(ConstructorArgument::value).toArray();
-			T instance = constructor.newInstance(values);
-			injectValues(instance);
-			return instance;
-		};
-		ExceptionHandler<T> handler = e -> {
-			throw new RuntimeException(ExceptionUtils.getRootCause(e));
-		};
-		return Uncheck.wrapSupplier(supplier, handler).get();
+	@Override
+	protected void decorate(T instance) {
+		injectValues(instance);
 	}
 
     private void injectValues(T t) {
@@ -111,12 +98,5 @@ public class XmlObjectCreator<T> {
 		};
 		Uncheck.wrapRunnable(runnable, handler).run();
 	}
-
-    public <R> boolean addConstructorArgument(Class<R> clazz, R value) {
-        return constructorArgs.add(new ConstructorArgument<>(clazz, value));
-    }
-
-    public static record ConstructorArgument<R>(Class<R> clazz, R value) {
-    }
 
 }
