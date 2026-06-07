@@ -18,12 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>sn.tools</groupId>
-			<artifactId>class-tools</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>sn.tools</groupId>
-			<artifactId>function-tools</artifactId>
+			<artifactId>core-tools</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

@@ -18,12 +18,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>sn.tools</groupId>
-			<artifactId>dom-tools</artifactId>
+			<artifactId>core-tools</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>sn.tools</groupId>
-			<artifactId>function-tools</artifactId>
+			<artifactId>dom-tools</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import sn.tools.db.annotation.DBColumn;
 import sn.tools.db.connect.DBConnector;
-import sn.tools.function.functions.ObjectCreator;
+import sn.tools.db.response.DBResponse;
+import sn.tools.clazz.creator.ObjectCreator;
 import sn.tools.function.uncheck.Uncheck;
 import sn.tools.function.uncheck.Uncheck.ThrowableConsumer;
 import sn.tools.function.uncheck.Uncheck.ThrowableFunction;
@@ -41,7 +42,7 @@ public class DBExecutor {
 		this.connector = connector;
 	}
 
-	private synchronized <R> R execute(String sql, Function<Connection, R> connFunc) {
+	private <R> R execute(String sql, Function<Connection, R> connFunc) {
 		ThrowableSupplier<R> supplier = () -> {
 			try (Connection conn = connector.getConnection()) {
 				return connFunc.apply(conn);
@@ -85,31 +86,48 @@ public class DBExecutor {
 	}
 
 	public <R> List<R> query(String sql, ObjectCreator<R> creator, Object... params) {
-		Class<R> clazz = creator.getCreateClass();
-		Map<String, WeakReference<Field>> fieldMap = fieldCache.computeIfAbsent(clazz,
-				c -> Arrays.stream(c.getFields()).filter(f -> f.isAnnotationPresent(DBColumn.class)).collect(
-						Collectors.toMap(f -> f.getAnnotation(DBColumn.class).value(), f -> new WeakReference<>(f))));
-		Map<String, WeakReference<Method>> methodMap = methodCache.computeIfAbsent(clazz,
-				c -> Arrays.stream(c.getMethods()).filter(m -> m.isAnnotationPresent(DBColumn.class)).collect(
-						Collectors.toMap(m -> m.getAnnotation(DBColumn.class).value(), m -> new WeakReference<>(m))));
-		BiFunction<Set<String>, ResultSet, R> packFunc = (s, rs) -> {
-			R ret = creator.create();
-			ThrowableConsumer<String> injectFunc = label -> {
-				if (fieldMap.containsKey(label)) {
-					Field f = fieldMap.get(label).get();
-					if (f != null) {
-						f.set(ret, rs.getObject(label));
+		List<DBResponse> responseList = query(sql, List.of(creator), params);
+		return responseList.stream().map(dbr -> dbr.get(creator.getCreateClass())).toList();
+	}
+
+	public List<DBResponse> query(String sql, List<ObjectCreator<?>> creatorList, Object... params) {
+		Map<ObjectCreator<?>, InjectTargets> packMap = new HashMap<>(creatorList.size());
+		for (ObjectCreator<?> creator : creatorList) {
+			Class<?> clazz = creator.getCreateClass();
+			Map<String, WeakReference<Field>> fieldMap = fieldCache.computeIfAbsent(clazz,
+					c -> Arrays.stream(c.getFields()).filter(f -> f.isAnnotationPresent(DBColumn.class))
+							.collect(Collectors.toUnmodifiableMap(f -> f.getAnnotation(DBColumn.class).value(),
+									f -> new WeakReference<>(f))));
+			Map<String, WeakReference<Method>> methodMap = methodCache.computeIfAbsent(clazz,
+					c -> Arrays.stream(c.getMethods()).filter(m -> m.isAnnotationPresent(DBColumn.class))
+							.collect(Collectors.toUnmodifiableMap(m -> m.getAnnotation(DBColumn.class).value(),
+									m -> new WeakReference<>(m))));
+			packMap.put(creator, new InjectTargets(fieldMap, methodMap));
+		}
+		BiFunction<Set<String>, ResultSet, DBResponse> packFunc = (s, rs) -> {
+			DBResponse response = new DBResponse();
+			packMap.forEach((creator, targets) -> {
+				Object value = creator.create();
+				Map<String, WeakReference<Field>> fieldMap = targets.fieldMap();
+				Map<String, WeakReference<Method>> methodMap = targets.methodMap();
+				ThrowableConsumer<String> injectFunc = label -> {
+					if (fieldMap.containsKey(label)) {
+						Field f = fieldMap.get(label).get();
+						if (f != null) {
+							f.set(value, rs.getObject(label));
+						}
 					}
-				}
-				if (methodMap.containsKey(label)) {
-					Method m = methodMap.get(label).get();
-					if (m != null) {
-						m.invoke(ret, rs.getObject(label));
+					if (methodMap.containsKey(label)) {
+						Method m = methodMap.get(label).get();
+						if (m != null) {
+							m.invoke(value, rs.getObject(label));
+						}
 					}
-				}
-			};
-			s.forEach(Uncheck.wrapConsumer(injectFunc));
-			return ret;
+				};
+				s.forEach(Uncheck.wrapConsumer(injectFunc));
+				response.put(creator.getCreateClass(), value);
+			});
+			return response;
 		};
 		return query(sql, packFunc, params);
 	}
@@ -127,6 +145,9 @@ public class DBExecutor {
 					.collect(Collectors.toCollection(LinkedHashSet::new));
 		};
 		return Uncheck.wrapSupplier(supplier).get();
+	}
+
+	private record InjectTargets(Map<String, WeakReference<Field>> fieldMap, Map<String, WeakReference<Method>> methodMap) {
 	}
 
 }

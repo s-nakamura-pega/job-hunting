@@ -1,4 +1,4 @@
-package sn.tools.function.functions;
+package sn.tools.clazz.creator;
 
 public interface ObjectCreator<T> {
 
