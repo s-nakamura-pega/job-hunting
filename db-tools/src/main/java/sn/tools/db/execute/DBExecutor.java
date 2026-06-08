@@ -1,6 +1,5 @@
 package sn.tools.db.execute;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -31,9 +30,9 @@ import sn.tools.function.uncheck.Uncheck.ThrowableSupplier;
 
 public class DBExecutor {
 
-	private static final Map<Class<?>, Map<String, WeakReference<Field>>> fieldCache = Collections
+	private static final Map<Class<?>, Map<String, Field>> fieldCache = Collections
 			.synchronizedMap(new WeakHashMap<>());
-	private static final Map<Class<?>, Map<String, WeakReference<Method>>> methodCache = Collections
+	private static final Map<Class<?>, Map<String, Method>> methodCache = Collections
 			.synchronizedMap(new WeakHashMap<>());
 
 	private final DBConnector connector;
@@ -42,16 +41,28 @@ public class DBExecutor {
 		this.connector = connector;
 	}
 
-	private <R> R execute(String sql, Function<Connection, R> connFunc) {
+	private <R> R execute(String sql, Function<Connection, R> connFunc, boolean isTransaction) {
 		ThrowableSupplier<R> supplier = () -> {
 			try (Connection conn = connector.getConnection()) {
-				return connFunc.apply(conn);
+				conn.setAutoCommit(!isTransaction);
+				try {
+					R ret = connFunc.apply(conn);
+					if (isTransaction) {
+						conn.commit();
+					}
+					return ret;
+				} catch (Exception e) {
+					if (isTransaction) {
+						conn.rollback();
+					}
+					throw e;
+				}
 			}
 		};
 		return Uncheck.wrapSupplier(supplier).get();
 	}
 
-	private <R> R execute(String sql, Function<PreparedStatement, R> psFunc, Object... params) {
+	private <R> R execute(String sql, Function<PreparedStatement, R> psFunc, boolean isTransaction, Object... params) {
 		ThrowableFunction<Connection, R> connFunc = conn -> {
 			try (PreparedStatement ps = conn.prepareStatement(sql)) {
 				IntStream.rangeClosed(1, params.length)
@@ -59,7 +70,7 @@ public class DBExecutor {
 				return psFunc.apply(ps);
 			}
 		};
-		return execute(sql, Uncheck.wrapFunction(connFunc));
+		return execute(sql, Uncheck.wrapFunction(connFunc), isTransaction);
 	}
 
 	private <R> List<R> query(String sql, BiFunction<Set<String>, ResultSet, R> packFunc, Object... params) {
@@ -73,7 +84,7 @@ public class DBExecutor {
 			}
 			return ret;
 		};
-		return execute(sql, Uncheck.wrapFunction(psFunc), params);
+		return execute(sql, Uncheck.wrapFunction(psFunc), false, params);
 	}
 
 	public List<Map<String, Object>> query(String sql, Object... params) {
@@ -94,31 +105,31 @@ public class DBExecutor {
 		Map<ObjectCreator<?>, InjectTargets> packMap = new HashMap<>(creatorList.size());
 		for (ObjectCreator<?> creator : creatorList) {
 			Class<?> clazz = creator.getCreateClass();
-			Map<String, WeakReference<Field>> fieldMap = fieldCache.computeIfAbsent(clazz,
+			Map<String, Field> fieldMap = fieldCache.computeIfAbsent(clazz,
 					c -> Arrays.stream(c.getFields()).filter(f -> f.isAnnotationPresent(DBColumn.class))
 							.collect(Collectors.toUnmodifiableMap(f -> f.getAnnotation(DBColumn.class).value(),
-									f -> new WeakReference<>(f))));
-			Map<String, WeakReference<Method>> methodMap = methodCache.computeIfAbsent(clazz,
+									f -> f)));
+			Map<String, Method> methodMap = methodCache.computeIfAbsent(clazz,
 					c -> Arrays.stream(c.getMethods()).filter(m -> m.isAnnotationPresent(DBColumn.class))
 							.collect(Collectors.toUnmodifiableMap(m -> m.getAnnotation(DBColumn.class).value(),
-									m -> new WeakReference<>(m))));
+									m -> m)));
 			packMap.put(creator, new InjectTargets(fieldMap, methodMap));
 		}
 		BiFunction<Set<String>, ResultSet, DBResponse> packFunc = (s, rs) -> {
 			DBResponse response = new DBResponse();
 			packMap.forEach((creator, targets) -> {
 				Object value = creator.create();
-				Map<String, WeakReference<Field>> fieldMap = targets.fieldMap();
-				Map<String, WeakReference<Method>> methodMap = targets.methodMap();
+				Map<String, Field> fieldMap = targets.fieldMap();
+				Map<String, Method> methodMap = targets.methodMap();
 				ThrowableConsumer<String> injectFunc = label -> {
 					if (fieldMap.containsKey(label)) {
-						Field f = fieldMap.get(label).get();
+						Field f = fieldMap.get(label);
 						if (f != null) {
 							f.set(value, rs.getObject(label));
 						}
 					}
 					if (methodMap.containsKey(label)) {
-						Method m = methodMap.get(label).get();
+						Method m = methodMap.get(label);
 						if (m != null) {
 							m.invoke(value, rs.getObject(label));
 						}
@@ -134,7 +145,7 @@ public class DBExecutor {
 
 	public Integer update(String sql, Object... params) {
 		ThrowableFunction<PreparedStatement, Integer> psFunc = ps -> ps.executeUpdate();
-		return execute(sql, Uncheck.wrapFunction(psFunc), params);
+		return execute(sql, Uncheck.wrapFunction(psFunc), true, params);
 	}
 
 	private Set<String> getLabelSet(ResultSet rs) {
@@ -147,7 +158,7 @@ public class DBExecutor {
 		return Uncheck.wrapSupplier(supplier).get();
 	}
 
-	private record InjectTargets(Map<String, WeakReference<Field>> fieldMap, Map<String, WeakReference<Method>> methodMap) {
+	private record InjectTargets(Map<String, Field> fieldMap, Map<String, Method> methodMap) {
 	}
 
 }
