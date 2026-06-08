@@ -8,7 +8,7 @@ import javax.swing.text.JTextComponent;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.XmlObject;
 
-@XmlObject("text-field")
+@XmlObject("text")
 public class XmlTextField extends JTextField implements XmlTextComponent {
 
 	private static final long serialVersionUID = 1L;

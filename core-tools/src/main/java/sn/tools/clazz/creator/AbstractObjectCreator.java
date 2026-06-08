@@ -2,6 +2,7 @@ package sn.tools.clazz.creator;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import sn.tools.clazz.exception.ExceptionUtils;
 import sn.tools.function.uncheck.Uncheck;
@@ -38,8 +39,19 @@ public abstract class AbstractObjectCreator<T> implements ObjectCreator<T> {
 		return Uncheck.wrapSupplier(supplier, handler).get();
 	}
 
-	public <R> boolean addConstructorArgument(Class<R> clazz, R value) {
-		return constructorArgs.add(new ConstructorArgument<>(clazz, value));
+	public <R> AbstractObjectCreator<T> addConstructorArgument(Class<R> clazz, R value) {
+		constructorArgs.add(new ConstructorArgument<>(clazz, value));
+		return this;
+	}
+
+	public <R> AbstractObjectCreator<T> addConstructorArgument(ConstructorArgument<?> arg) {
+		constructorArgs.add(arg);
+		return this;
+	}
+
+	public <R> AbstractObjectCreator<T> addAllConstructorArgument(Collection<? extends ConstructorArgument<?>> args) {
+		constructorArgs.addAll(args);
+		return this;
 	}
 
 	protected abstract void decorate(T instance) throws Exception;
