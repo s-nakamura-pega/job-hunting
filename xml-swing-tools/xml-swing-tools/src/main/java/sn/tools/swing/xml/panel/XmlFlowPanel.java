@@ -1,21 +1,26 @@
 package sn.tools.swing.xml.panel;
 
 import java.awt.FlowLayout;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
-public class XmlFlowPanel extends JPanel implements XmlPanel {
+import sn.tools.swing.xml.component.XmlComponent;
+
+public class XmlFlowPanel extends XmlPanel {
 
 	private static final long serialVersionUID = 1L;
+	
+	private final JPanel panel = new JPanel();
 
-	public XmlFlowPanel() {
-		super();
-		setLayout(new FlowLayout());
+	public XmlFlowPanel(Map<String, XmlComponent> componentMap) {
+		super(componentMap);
+		panel.setLayout(new FlowLayout());
 	}
 
 	@Override
 	public JPanel injectTargetPanel() {
-		return this;
+		return panel;
 	}
 
 }

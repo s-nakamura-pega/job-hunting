@@ -9,22 +9,24 @@ import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.XmlObject;
 
 @XmlObject("text")
-public class XmlTextField extends JTextField implements XmlTextComponent {
+public class XmlTextField extends XmlTextComponent {
 
 	private static final long serialVersionUID = 1L;
+
+	private final JTextField component = new JTextField();
 
 	@InjectXmlAttribute("h-align")
 	public void injectHorizontalAlignment(String alignment) {
 		try {
 			Field field = JTextField.class.getField(alignment.toUpperCase());
-			setHorizontalAlignment(field.getInt(null));
+			component.setHorizontalAlignment(field.getInt(null));
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new IllegalArgumentException("Invalid alignment: " + alignment, e);
 		}
 	}
 
 	public JTextComponent injectTargetTextComponent() {
-		return this;
+		return component;
 	}
 
 }

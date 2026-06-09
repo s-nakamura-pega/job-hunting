@@ -9,27 +9,27 @@ import sn.tools.swing.util.ComponentUtils;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlTextContent;
 
-public interface XmlTextComponent extends XmlComponent {
+public abstract class XmlTextComponent extends XmlComponent {
 
 	/**
 	 * DIを行うコンポーネント
 	 * 
 	 * @return DIを行うコンポーネント
 	 */
-	JTextComponent injectTargetTextComponent();
+	public abstract JTextComponent injectTargetTextComponent();
 
 	@Override
-	default JComponent injectTargetComponent() {
+	public JComponent injectTargetComponent() {
 		return injectTargetTextComponent();
 	}
 
 	@InjectXmlTextContent
-	default void injectValue(String value) {
+	public void injectValue(String value) {
 		injectTargetTextComponent().setText(value);
 	}
 
 	@InjectXmlAttribute("undoable")
-	default void injectUndoable(String value) {
+	public void injectUndoable(String value) {
 		if (Boolean.parseBoolean(value)) {
 			UndoManager undoManager = ComponentUtils.setUndo(injectTargetTextComponent());
 			SwingUtilities.invokeLater(undoManager::discardAllEdits);

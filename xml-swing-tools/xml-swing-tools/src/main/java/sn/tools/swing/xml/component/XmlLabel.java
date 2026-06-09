@@ -8,15 +8,17 @@ import javax.swing.JLabel;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlTextContent;
 
-public class XmlLabel extends JLabel implements XmlComponent {
+public class XmlLabel extends XmlComponent {
 
 	private static final long serialVersionUID = 1L;
+
+	private final JLabel component = new JLabel();
 
 	@InjectXmlAttribute("h-align")
 	public void injectHorizontalAlignment(String alignment) {
 		try {
 			Field field = JLabel.class.getField(alignment.toUpperCase());
-			setHorizontalAlignment(field.getInt(null));
+			component.setHorizontalAlignment(field.getInt(null));
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new IllegalArgumentException("Invalid alignment: " + alignment, e);
 		}
@@ -26,7 +28,7 @@ public class XmlLabel extends JLabel implements XmlComponent {
 	public void injectVerticalAlignment(String alignment) {
 		try {
 			Field field = JLabel.class.getField(alignment.toUpperCase());
-			setVerticalAlignment(field.getInt(null));
+			component.setVerticalAlignment(field.getInt(null));
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new IllegalArgumentException("Invalid vertical alignment: " + alignment, e);
 		}
@@ -34,12 +36,12 @@ public class XmlLabel extends JLabel implements XmlComponent {
 
 	@InjectXmlTextContent
 	public void injectLabel(String label) {
-		setText(label);
+		component.setText(label);
 	}
 
 	@Override
 	public JComponent injectTargetComponent() {
-		return this;
+		return component;
 	}
 
 }

@@ -7,17 +7,17 @@ import javax.swing.JComponent;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlTextContent;
 
-public interface XmlButtonComponent extends XmlComponent {
+public abstract class XmlButtonComponent extends XmlComponent {
 
-	AbstractButton injectTargetButtonComponent();
+	public abstract AbstractButton injectTargetButtonComponent();
 
 	@Override
-	default JComponent injectTargetComponent() {
+	public JComponent injectTargetComponent() {
 		return injectTargetButtonComponent();
 	}
 
 	@InjectXmlAttribute("h-align")
-	default void injectHorizontalAlignment(String alignment) {
+	public void injectHorizontalAlignment(String alignment) {
 		AbstractButton comp = injectTargetButtonComponent();
 		try {
 			Field field = AbstractButton.class.getField(alignment.toUpperCase());
@@ -28,7 +28,7 @@ public interface XmlButtonComponent extends XmlComponent {
 	}
 
 	@InjectXmlAttribute("v-align")
-	default void injectVerticalAlignment(String alignment) {
+	public void injectVerticalAlignment(String alignment) {
 		AbstractButton comp = injectTargetButtonComponent();
 		try {
 			Field field = AbstractButton.class.getField(alignment.toUpperCase());
@@ -39,17 +39,17 @@ public interface XmlButtonComponent extends XmlComponent {
 	}
 
 	@InjectXmlTextContent
-	default void injectLabel(String label) {
+	public void injectLabel(String label) {
 		injectTargetButtonComponent().setText(label);
 	}
 
 	@InjectXmlAttribute("selected")
-	default void injectSelected(String isSelected) {
+	public void injectSelected(String isSelected) {
 		injectTargetButtonComponent().setSelected(Boolean.parseBoolean(isSelected));
 	}
 
 	@InjectXmlAttribute("value")
-	default void injectValue(String value) {
+	public void injectValue(String value) {
 		injectTargetButtonComponent().setActionCommand(value);
 	}
 

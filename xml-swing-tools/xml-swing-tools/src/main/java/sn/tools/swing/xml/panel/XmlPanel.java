@@ -1,5 +1,7 @@
 package sn.tools.swing.xml.panel;
 
+import java.util.Map;
+
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -8,23 +10,44 @@ import org.w3c.dom.Element;
 import sn.tools.swing.xml.component.XmlComponent;
 import sn.tools.swing.xml.component.XmlComponentConfigs;
 import sn.tools.xml.bind.annotation.InjectXmlElement;
+import sn.tools.xml.bind.creator.XmlObjectCreator;
 
-public interface XmlPanel extends XmlComponentConfigs, XmlComponent, XmlPanelConfigs {
+public abstract class XmlPanel extends XmlComponent implements XmlComponentConfigs, XmlPanelConfigs {
+
+	private static final long serialVersionUID = 1L;
+
+	private final Map<String, XmlComponent> componentMap;
+
+	public XmlPanel(Map<String, XmlComponent> componentMap) {
+		this.componentMap = componentMap;
+	}
 
 	@InjectXmlElement({ "text", "button", "check-box", "radio-button", "text-area", "label" })
-	default void addComponent(Element element) {
-		injectTargetPanel()
-				.add(COMPONENT_CONFIGS.get(element.getTagName()).getComponent(element).injectTargetComponent());
+	public void addComponent(Element element) {
+		Class<? extends XmlComponent> clazz = COMPONENT_CONFIGS.get(element.getTagName());
+		XmlComponent comp = new XmlObjectCreator<>(element, clazz).create();
+		String id = comp.getId();
+		if (id != null) {
+			componentMap.put(id, comp);
+		}
+		injectTargetPanel().add(comp.injectTargetComponent());
 	}
 
-	default void addPanel(Element element) {
-		injectTargetPanel().add(PANEL_CONFIGS.get(element.getTagName()).getPanel(element).injectTargetPanel());
+	@InjectXmlElement({ "flow-panel" })
+	public void addPanel(Element element) {
+		Class<? extends XmlPanel> clazz = PANEL_CONFIGS.get(element.getTagName());
+		XmlPanel panel = new XmlObjectCreator<>(element, clazz).addConstructorArgument(Map.class, componentMap).create();
+		String id = panel.getId();
+		if (id != null) {
+			componentMap.put(id, panel);
+		}
+		injectTargetPanel().add(panel.injectTargetPanel());
 	}
 
-	JPanel injectTargetPanel();
+	public abstract JPanel injectTargetPanel();
 
 	@Override
-	default JComponent injectTargetComponent() {
+	public JComponent injectTargetComponent() {
 		return injectTargetPanel();
 	}
 

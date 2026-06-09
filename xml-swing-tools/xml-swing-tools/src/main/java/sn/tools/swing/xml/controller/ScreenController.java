@@ -1,36 +1,50 @@
 package sn.tools.swing.xml.controller;
 
+import java.awt.Container;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import sn.tools.clazz.creator.SimpleObjectCreator;
 import sn.tools.clazz.load.PackageScanner;
+import sn.tools.function.uncheck.Uncheck;
+import sn.tools.function.uncheck.Uncheck.ThrowableConsumer;
 import sn.tools.swing.xml.annotation.Screen;
-import sn.tools.swing.xml.screen.ScreenCreator;
+import sn.tools.swing.xml.screen.XmlScreenCreator;
 
-public interface ScreenController {
+public class ScreenController {
 
-	public static void call(JFrame frame, String packageName, String screenName)
-			throws ClassNotFoundException, IOException {
+	private final Map<String, JPanel> screenMap = new ConcurrentHashMap<>();
+
+	public ScreenController(String packageName) {
+		Uncheck.wrapRunnable(() -> createScreen(packageName));
+	}
+
+	private void createScreen(String packageName) throws ClassNotFoundException, IOException {
 		Predicate<Class<?>> istarget = clazz -> {
-			return !ScreenCreator.class.equals(clazz) && ScreenCreator.class.isAssignableFrom(clazz)
-					&& clazz.getAnnotation(Screen.class) != null
-					&& screenName.equals(clazz.getAnnotation(Screen.class).value());
+			return !XmlScreenCreator.class.equals(clazz) && XmlScreenCreator.class.isAssignableFrom(clazz)
+					&& clazz.getAnnotation(Screen.class) != null;
 		};
 		List<Class<?>> classList = PackageScanner.getClassList(packageName, istarget);
 		if (classList.isEmpty()) {
-			throw new IllegalArgumentException("指定された画面が見つかりません: " + screenName);
+			throw new IllegalArgumentException("画面が見つかりません。");
 		}
-		if (classList.size() > 1) {
-			throw new IllegalStateException("画面名 '" + screenName + "' が重複しています: " + classList);
-		}
-		Object scObject = new SimpleObjectCreator<>(classList.getFirst()).create();
-		if (scObject instanceof ScreenCreator sc) {
-			frame.setContentPane(sc.create());
-		}
+		ThrowableConsumer<Class<?>> putMapConsumer = clazz -> {
+			String screenName = clazz.getAnnotation(Screen.class).value();
+			Object scObject = new SimpleObjectCreator<>(classList.getFirst()).create();
+			if (scObject instanceof XmlScreenCreator sc) {
+				screenMap.put(screenName, sc.create());
+			}
+		};
+		classList.forEach(Uncheck.wrapConsumer(putMapConsumer));
+	}
+
+	public JPanel getScreen(String screenName) {
+		return screenMap.get(screenName);
 	}
 
 }

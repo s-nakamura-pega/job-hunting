@@ -16,9 +16,11 @@ import sn.tools.function.uncheck.Uncheck.VoidExceptionHandler;
 import sn.tools.swing.util.WindowUtils;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 
-public class XmlActionButton extends JButton implements XmlButtonComponent {
+public class XmlActionButton extends XmlButtonComponent {
 
 	private static final long serialVersionUID = 1L;
+	
+	private final JButton component = new JButton();
 
 	private final AtomicReference<ActionListener> actionListener = new AtomicReference<>();
 
@@ -51,14 +53,14 @@ public class XmlActionButton extends JButton implements XmlButtonComponent {
 		};
 		ActionListener oldAction = actionListener.getAndSet(newAction);
 		if (oldAction != null) {
-			removeActionListener(oldAction);
+			component.removeActionListener(oldAction);
 		}
-		addActionListener(newAction);
+		component.addActionListener(newAction);
 	}
 
 	@Override
 	public AbstractButton injectTargetButtonComponent() {
-		return this;
+		return component;
 	}
 
 }
