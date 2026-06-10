@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen>
+	<flow-panel>
+		<label>Name</label>
+		<text id="name" width="100"></text>
+		<button id="form">Next Screen</button>
+	</flow-panel>
+</screen>

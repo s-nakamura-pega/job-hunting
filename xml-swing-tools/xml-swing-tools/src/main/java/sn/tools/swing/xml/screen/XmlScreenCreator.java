@@ -1,7 +1,6 @@
 package sn.tools.swing.xml.screen;
 
-import java.io.ObjectInputStream.GetField;
-import java.io.UncheckedIOException;
+import java.awt.event.ActionEvent;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,13 +9,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.AbstractButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import sn.tools.clazz.creator.ObjectCreator.ConstructorArgument;
 import sn.tools.function.uncheck.Uncheck;
+import sn.tools.swing.flow.screen.ScreenCreator;
 import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
 import sn.tools.swing.xml.component.XmlComponent;
@@ -32,7 +33,7 @@ public abstract class XmlScreenCreator implements XmlPanelConfigs, ScreenCreator
 
 	@Override
 	public JPanel create() {
-		Document doc = DocumentUtils.read(xmlURL(), false);
+		Document doc = DocumentUtils.read(xmlURL(), true);
 		doc.getDocumentElement().normalize();
 		DomElementWrapper dew = new DomElementWrapper(doc.getDocumentElement());
 		Optional<Element> elementOpt = dew.childElementStream().findFirst();
@@ -47,7 +48,7 @@ public abstract class XmlScreenCreator implements XmlPanelConfigs, ScreenCreator
 		if (id != null) {
 			componentMap.put(id, xmlPanel);
 		}
-		Uncheck.wrapRunnable(() -> injectComponent());
+		Uncheck.wrapRunnable(() -> injectComponent()).run();
 		onInit();
 		return xmlPanel.injectTargetPanel();
 	}
@@ -66,8 +67,17 @@ public abstract class XmlScreenCreator implements XmlPanelConfigs, ScreenCreator
 				m.invoke(this, componentMap.get(ic.value()).injectTargetComponent());
 			}
 			InjectAction ia = m.getAnnotation(InjectAction.class);
-			// TODO actionインジェクション
+			if (ia != null && componentMap.containsKey(ia.value())) {
+				JComponent comp = componentMap.get(ia.value()).injectTargetComponent();
+				if (comp instanceof AbstractButton button) {
+					button.addActionListener(e -> action(e, m));
+				}
+			}
 		}
+	}
+
+	private void action(ActionEvent event, Method method) {
+		Uncheck.wrapConsumer(e -> method.invoke(this, e)).accept(event);
 	}
 
 	abstract protected URL xmlURL();

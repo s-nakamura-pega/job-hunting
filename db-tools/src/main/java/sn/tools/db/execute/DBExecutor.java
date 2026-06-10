@@ -8,18 +8,18 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import sn.tools.db.annotation.DBColumn;
+import sn.tools.db.annotation.DBTable;
 import sn.tools.db.connect.DBConnector;
 import sn.tools.db.response.DBResponse;
 import sn.tools.clazz.creator.ObjectCreator;
@@ -30,18 +30,13 @@ import sn.tools.function.uncheck.Uncheck.ThrowableSupplier;
 
 public class DBExecutor {
 
-	private static final Map<Class<?>, Map<String, Field>> fieldCache = Collections
-			.synchronizedMap(new WeakHashMap<>());
-	private static final Map<Class<?>, Map<String, Method>> methodCache = Collections
-			.synchronizedMap(new WeakHashMap<>());
-
 	private final DBConnector connector;
 
 	public DBExecutor(DBConnector connector) {
 		this.connector = connector;
 	}
 
-	private <R> R execute(String sql, Function<Connection, R> connFunc, boolean isTransaction) {
+	private <R> R execute(Function<Connection, R> connFunc, boolean isTransaction) {
 		ThrowableSupplier<R> supplier = () -> {
 			try (Connection conn = connector.getConnection()) {
 				conn.setAutoCommit(!isTransaction);
@@ -70,7 +65,7 @@ public class DBExecutor {
 				return psFunc.apply(ps);
 			}
 		};
-		return execute(sql, Uncheck.wrapFunction(connFunc), isTransaction);
+		return execute(Uncheck.wrapFunction(connFunc), isTransaction);
 	}
 
 	private <R> List<R> query(String sql, BiFunction<Set<String>, ResultSet, R> packFunc, Object... params) {
@@ -105,14 +100,12 @@ public class DBExecutor {
 		Map<ObjectCreator<?>, InjectTargets> packMap = new HashMap<>(creatorList.size());
 		for (ObjectCreator<?> creator : creatorList) {
 			Class<?> clazz = creator.getCreateClass();
-			Map<String, Field> fieldMap = fieldCache.computeIfAbsent(clazz,
-					c -> Arrays.stream(c.getFields()).filter(f -> f.isAnnotationPresent(DBColumn.class))
-							.collect(Collectors.toUnmodifiableMap(f -> f.getAnnotation(DBColumn.class).value(),
-									f -> f)));
-			Map<String, Method> methodMap = methodCache.computeIfAbsent(clazz,
-					c -> Arrays.stream(c.getMethods()).filter(m -> m.isAnnotationPresent(DBColumn.class))
-							.collect(Collectors.toUnmodifiableMap(m -> m.getAnnotation(DBColumn.class).value(),
-									m -> m)));
+			Map<String, Field> fieldMap = Arrays.stream(clazz.getFields())
+					.filter(f -> f.isAnnotationPresent(DBColumn.class))
+					.collect(Collectors.toMap(f -> f.getAnnotation(DBColumn.class).value(), f -> f));
+			Map<String, Method> methodMap = Arrays.stream(clazz.getMethods())
+					.filter(m -> m.isAnnotationPresent(DBColumn.class)).filter(m -> m.getParameterCount() == 1)
+					.collect(Collectors.toMap(m -> m.getAnnotation(DBColumn.class).value(), m -> m));
 			packMap.put(creator, new InjectTargets(fieldMap, methodMap));
 		}
 		BiFunction<Set<String>, ResultSet, DBResponse> packFunc = (s, rs) -> {
@@ -159,6 +152,43 @@ public class DBExecutor {
 	}
 
 	private record InjectTargets(Map<String, Field> fieldMap, Map<String, Method> methodMap) {
+	}
+
+	public int insert(Object object) {
+		Class<?> clazz = object.getClass();
+		if (!clazz.isAnnotationPresent(DBTable.class)) {
+			return -1;
+		}
+		DBTable dbTable = clazz.getAnnotation(DBTable.class);
+		Map<String, Object> paramMap = new LinkedHashMap<>();
+		Arrays.stream(clazz.getFields()).filter(f -> f.isAnnotationPresent(DBColumn.class)).forEach(f -> {
+			String col = f.getAnnotation(DBColumn.class).value();
+			Object val = Uncheck.wrapSupplier(() -> f.get(object)).get();
+			if (val != null) {
+				paramMap.put(col, val);
+			}
+		});
+		Arrays.stream(clazz.getMethods()).filter(m -> m.isAnnotationPresent(DBColumn.class))
+				.filter(m -> m.getParameterCount() == 0).forEach(m -> {
+					String col = m.getAnnotation(DBColumn.class).value();
+					if (!paramMap.containsKey(col)) {
+						Object val = Uncheck.wrapSupplier(() -> m.invoke(object)).get();
+						if (val != null) {
+							paramMap.put(col, val);
+						}
+					}
+				});
+		if (paramMap.isEmpty()) {
+			return -1;
+		}
+		List<String> labelList = new ArrayList<>(paramMap.keySet());
+		List<String> bindList = labelList.stream().map(k -> "?").toList();
+		List<Object> valueList = new ArrayList<>(paramMap.values());
+		String sql = String.format("INSERT INTO %s(%s) VALUES(%s)",
+				dbTable.value(),
+				String.join(",", labelList),
+				String.join(",", bindList));
+		return update(sql, valueList.toArray());
 	}
 
 }

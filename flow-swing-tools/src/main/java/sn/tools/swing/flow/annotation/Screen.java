@@ -1,4 +1,4 @@
-package sn.tools.swing.xml.annotation;
+package sn.tools.swing.flow.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

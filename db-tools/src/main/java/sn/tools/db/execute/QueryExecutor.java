@@ -50,7 +50,6 @@ public class QueryExecutor {
 		try {
 			return executor.query(sql, List.copyOf(creatorList), paramList.toArray());
 		} finally {
-			// 💡 実行後に状態をクリアすることで、インスタンスの使い回しによるバグを100%防止する
 			this.sql = null;
 			this.creatorList.clear();
 			this.paramList.clear();

@@ -64,7 +64,7 @@ public class XmlObjectCreator<T> extends AbstractObjectCreator<T>{
 					String namespaceURI = ixe.namespaceURI().isBlank() ? null : ixe.namespaceURI();
 					for (String name : ixe.value()) {
 						if (Objects.equals(elem.getNamespaceURI(), namespaceURI)
-								&& Objects.equals(elem.getLocalName(), name)) {
+								&& Objects.equals(elem.getTagName(), name)) {
 							injectElementValues(t, method, elem);
 							break;
 						}

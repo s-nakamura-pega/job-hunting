@@ -14,7 +14,7 @@ public abstract class XmlComponent {
 
 	@InjectXmlAttribute("id")
 	public void setId(String id) {
-
+		this.id = id;
 	}
 
 	@InjectXmlAttribute("width")
