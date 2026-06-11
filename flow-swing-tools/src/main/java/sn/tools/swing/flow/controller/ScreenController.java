@@ -13,11 +13,12 @@ import sn.tools.clazz.load.PackageScanner;
 import sn.tools.function.uncheck.Uncheck;
 import sn.tools.function.uncheck.Uncheck.ThrowableConsumer;
 import sn.tools.swing.flow.annotation.Screen;
+import sn.tools.swing.flow.parameter.ScreenParameter;
 import sn.tools.swing.flow.screen.ScreenCreator;
 
 public class ScreenController {
 
-	private final Map<String, JPanel> screenMap = new ConcurrentHashMap<>();
+	private final Map<String, ScreenCreator> screenMap = new ConcurrentHashMap<>();
 
 	public ScreenController(String packageName) {
 		Uncheck.wrapRunnable(() -> createScreen(packageName)).run();
@@ -36,14 +37,17 @@ public class ScreenController {
 			String screenName = clazz.getAnnotation(Screen.class).value();
 			Object scObject = new SimpleObjectCreator<>(clazz).create();
 			if (scObject instanceof ScreenCreator sc) {
-				screenMap.put(screenName, sc.create());
+				sc.create();
+				screenMap.put(screenName, sc);
 			}
 		};
 		classList.forEach(Uncheck.wrapConsumer(putMapConsumer));
 	}
 
-	public JPanel getScreen(String screenName) {
-		return screenMap.get(screenName);
+	public JPanel getScreen(String screenName, ScreenParameter parameter) {
+		ScreenCreator sc = screenMap.get(screenName);
+		sc.setScreenParameter(parameter);
+		return sc.getCreatedPanel();
 	}
 
 }

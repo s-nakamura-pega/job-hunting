@@ -1,11 +1,7 @@
 package sn.tools.swing.xml.panel;
 
 import java.awt.FlowLayout;
-import java.util.Map;
-
 import javax.swing.JPanel;
-
-import sn.tools.swing.xml.component.XmlComponent;
 
 public class XmlFlowPanel extends XmlPanel {
 
@@ -13,8 +9,7 @@ public class XmlFlowPanel extends XmlPanel {
 	
 	private final JPanel panel = new JPanel();
 
-	public XmlFlowPanel(Map<String, XmlComponent> componentMap) {
-		super(componentMap);
+	public XmlFlowPanel() {
 		panel.setLayout(new FlowLayout());
 	}
 

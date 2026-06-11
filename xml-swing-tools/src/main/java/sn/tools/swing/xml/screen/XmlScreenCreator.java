@@ -30,27 +30,29 @@ import sn.tools.xml.dom.DomElementWrapper;
 public abstract class XmlScreenCreator implements XmlPanelConfigs, ScreenCreator {
 
 	private final Map<String, XmlComponent> componentMap = new ConcurrentHashMap<>();
+	private JPanel panel;
 
 	@Override
-	public JPanel create() {
+	public void create() {
 		Document doc = DocumentUtils.read(xmlURL(), true);
 		doc.getDocumentElement().normalize();
 		DomElementWrapper dew = new DomElementWrapper(doc.getDocumentElement());
 		Optional<Element> elementOpt = dew.childElementStream().findFirst();
 		if (elementOpt.isEmpty()) {
-			return new JPanel();
+			return;
 		}
 		Element element = elementOpt.get();
 		Class<? extends XmlPanel> clazz = PANEL_CONFIGS.get(element.getTagName());
-		XmlPanel xmlPanel = new XmlObjectCreator<>(element, clazz).addConstructorArgument(Map.class, componentMap)
-				.create();
+		XmlObjectCreator<? extends XmlPanel> xoc = new XmlObjectCreator<>(element, clazz);
+		xoc.setPreDecorateProcess(panel -> panel.setComponentMap(componentMap));
+		XmlPanel xmlPanel = xoc.create();
 		String id = xmlPanel.getId();
 		if (id != null) {
 			componentMap.put(id, xmlPanel);
 		}
 		Uncheck.wrapRunnable(() -> injectComponent()).run();
 		onInit();
-		return xmlPanel.injectTargetPanel();
+		panel = xmlPanel.injectTargetPanel();
 	}
 
 	private void injectComponent() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
@@ -78,6 +80,19 @@ public abstract class XmlScreenCreator implements XmlPanelConfigs, ScreenCreator
 
 	private void action(ActionEvent event, Method method) {
 		Uncheck.wrapConsumer(e -> method.invoke(this, e)).accept(event);
+	}
+
+	@Override
+	public JPanel getCreatedPanel() {
+		return panel;
+	}
+
+	@Override
+	public <T extends JPanel> T getCreatedPanel(Class<T> clazz) {
+		if (clazz.isInstance(panel)) {
+			return clazz.cast(panel);
+		}
+		return null;
 	}
 
 	abstract protected URL xmlURL();

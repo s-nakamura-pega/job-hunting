@@ -16,9 +16,9 @@ public abstract class XmlPanel extends XmlComponent implements XmlComponentConfi
 
 	private static final long serialVersionUID = 1L;
 
-	private final Map<String, XmlComponent> componentMap;
+	private Map<String, XmlComponent> componentMap;
 
-	public XmlPanel(Map<String, XmlComponent> componentMap) {
+	public void setComponentMap(Map<String, XmlComponent> componentMap) {
 		this.componentMap = componentMap;
 	}
 

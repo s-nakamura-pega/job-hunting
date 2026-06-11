@@ -3,11 +3,14 @@ package sn.tools.swing.xml.component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
 
 import sn.tools.clazz.exception.ExceptionUtils;
 import sn.tools.function.uncheck.Uncheck;
@@ -18,11 +21,16 @@ import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 
 public class XmlActionButton extends XmlButtonComponent {
 
-	private static final long serialVersionUID = 1L;
-	
 	private final JButton component = new JButton();
 
 	private final AtomicReference<ActionListener> actionListener = new AtomicReference<>();
+
+	public XmlActionButton() {
+		super();
+		component.registerKeyboardAction(_ -> component.doClick(),
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+				JComponent.WHEN_FOCUSED);
+	}
 
 	@InjectXmlAttribute("action")
 	public void setAction(String action) {

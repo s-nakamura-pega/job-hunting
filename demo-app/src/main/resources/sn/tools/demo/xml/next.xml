@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <screen>
 	<flow-panel>
-		<label>Next Screen</label>
+		<label>入力値：</label><label id="label" />
 	</flow-panel>
 </screen>

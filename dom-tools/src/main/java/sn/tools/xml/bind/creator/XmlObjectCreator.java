@@ -22,6 +22,7 @@ public class XmlObjectCreator<T> extends AbstractObjectCreator<T>{
     private final DomElementWrapper element;
     private final List<Method> attributeAndTextMethods = new ArrayList<>();
     private final List<Method> elementMethods = new ArrayList<>();
+    private Consumer<T> consumer;
 
     public XmlObjectCreator(Element element, Class<T> clazz) {
         super(clazz);
@@ -37,8 +38,15 @@ public class XmlObjectCreator<T> extends AbstractObjectCreator<T>{
         }
     }
 
+	public void setPreDecorateProcess(Consumer<T> consumer) {
+		this.consumer = consumer;
+	}
+
 	@Override
 	protected void decorate(T instance) {
+		if (consumer != null) {
+			consumer.accept(instance);
+		}
 		injectValues(instance);
 	}
 

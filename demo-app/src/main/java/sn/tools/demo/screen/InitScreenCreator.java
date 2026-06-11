@@ -7,6 +7,8 @@ import javax.swing.JTextField;
 
 import sn.tools.swing.flow.annotation.Screen;
 import sn.tools.swing.flow.frame.FlowScreenFrame;
+import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.SimpleScreenParameter;
 import sn.tools.swing.util.WindowUtils;
 import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
@@ -20,9 +22,9 @@ public class InitScreenCreator extends XmlScreenCreator {
 
 	@InjectAction("form")
 	public void form(ActionEvent event) {
-		System.out.println(text.getText());
-		FlowScreenFrame frame = WindowUtils.getWindow(event, FlowScreenFrame.class);
-		frame.flowScreen("next");
+		ScreenParameter sp = new SimpleScreenParameter();
+		sp.addParam("text", text.getText());
+		FlowScreenFrame.flow(event, "next", sp);
 	}
 	
 	@Override
@@ -33,6 +35,10 @@ public class InitScreenCreator extends XmlScreenCreator {
 	@Override
 	protected void onInit() {
 		System.out.println("init.xml onInit");
+	}
+
+	@Override
+	public void setScreenParameter(ScreenParameter parameter) {
 	}
 
 }
