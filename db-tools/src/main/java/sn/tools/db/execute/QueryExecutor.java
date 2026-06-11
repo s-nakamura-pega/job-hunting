@@ -7,7 +7,7 @@ import java.util.List;
 import sn.tools.clazz.creator.ObjectCreator;
 import sn.tools.db.response.DBResponse;
 
-public class QueryExecutor {
+public class QueryExecutor implements DBActionExecutor<List<DBResponse>> {
 
 	private final DBExecutor executor;
 	private String sql;
@@ -43,6 +43,7 @@ public class QueryExecutor {
 		return this;
 	}
 
+	@Override
 	public List<DBResponse> execute() {
 		if (sql == null) {
 			throw new IllegalArgumentException("SQLが設定されていません。");

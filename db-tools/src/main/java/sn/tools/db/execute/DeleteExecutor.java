@@ -4,31 +4,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class UpdateExecutor implements DBActionExecutor<Integer> {
+public class DeleteExecutor implements DBActionExecutor<Integer> {
 
 	private final DBExecutor executor;
 	private String sql;
 	private final List<Object> paramList = new ArrayList<>();
 
-	public UpdateExecutor(DBExecutor executor) {
+	public DeleteExecutor(DBExecutor executor) {
 		this.executor = executor;
 	}
 
-	public UpdateExecutor setSql(String sql) {
+	public DeleteExecutor setSql(String sql) {
 		this.sql = sql;
 		return this;
 	}
 
-	public UpdateExecutor addParams(Object... params) {
+	public DeleteExecutor addParams(Object... params) {
 		paramList.addAll(Arrays.asList(params));
 		return this;
 	}
 
-	public UpdateExecutor addParam(Object param) {
+	public DeleteExecutor addParam(Object param) {
 		paramList.add(param);
 		return this;
 	}
 
+	@Override
 	public Integer execute() {
 		if (sql == null) {
 			throw new IllegalArgumentException("SQLが設定されていません。");
