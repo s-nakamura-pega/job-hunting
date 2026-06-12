@@ -3,8 +3,10 @@ package sn.tools.swing.flow.frame;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import sn.tools.swing.flow.context.SimpleScreenContext;
 import sn.tools.swing.flow.controller.ScreenController;
 import sn.tools.swing.flow.parameter.ScreenParameter;
 import sn.tools.swing.flow.parameter.SimpleScreenParameter;
@@ -21,13 +23,17 @@ public abstract class FlowScreenFrame extends JFrame {
 		setSize(WindowUtils.getScreenRatioSize(0.7));
 		setLocationRelativeTo(null);
 		controller = new ScreenController(scanPackage());
-		setContentPane(controller.getScreen(initScreenId(), new SimpleScreenParameter()));
+		flowScreen(initScreenId(), new SimpleScreenParameter());
 		onInit();
 	}
 
 	public void flowScreen(String screenId, ScreenParameter parameter) {
+		controller.flowScreen(screenId, new SimpleScreenContext(this, parameter));
+	}
+
+	public void flow(JPanel panel) {
 		SwingUtilities.invokeLater(() -> {
-			setContentPane(controller.getScreen(screenId, parameter));
+			setContentPane(panel);
 			revalidate();
 			repaint();
 		});

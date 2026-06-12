@@ -18,7 +18,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>sn.tools</groupId>
-			<artifactId>flow-swing-tools</artifactId>
+			<artifactId>dom-tools</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>sn.tools</groupId>
+			<artifactId>swing-tools</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

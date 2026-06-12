@@ -4,21 +4,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-
-import javax.swing.JPanel;
 
 import sn.tools.clazz.creator.SimpleObjectCreator;
 import sn.tools.clazz.load.PackageScanner;
 import sn.tools.function.uncheck.Uncheck;
 import sn.tools.function.uncheck.Uncheck.ThrowableConsumer;
 import sn.tools.swing.flow.annotation.Screen;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.context.ScreenContext;
 import sn.tools.swing.flow.screen.ScreenCreator;
 
 public class ScreenController {
 
 	private final Map<String, ScreenCreator> screenMap = new ConcurrentHashMap<>();
+	private final AtomicReference<String> currentScreenId = new AtomicReference<>();
 
 	public ScreenController(String packageName) {
 		Uncheck.wrapRunnable(() -> createScreen(packageName)).run();
@@ -44,10 +44,21 @@ public class ScreenController {
 		classList.forEach(Uncheck.wrapConsumer(putMapConsumer));
 	}
 
-	public JPanel getScreen(String screenName, ScreenParameter parameter) {
-		ScreenCreator sc = screenMap.get(screenName);
-		sc.setScreenParameter(parameter);
-		return sc.getCreatedPanel();
+	public void flowScreen(String screenId, ScreenContext context) {
+		ScreenCreator sc = screenMap.get(screenId);
+		if (sc == null) {
+			throw new IllegalArgumentException("ScreenIDは登録されていません。screenId: " + screenId);
+		}
+		String oldId = currentScreenId.getAndSet(screenId);
+		if (oldId != null) {
+			screenMap.get(oldId).onExit();
+		}
+		sc.onEnter(context);
+		context.frame().flow(sc.getCreatedPanel());
+	}
+
+	public void reloadScreen() {
+		screenMap.get(currentScreenId.get()).reload();
 	}
 
 }

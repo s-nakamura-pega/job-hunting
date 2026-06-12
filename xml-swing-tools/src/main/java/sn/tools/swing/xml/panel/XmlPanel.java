@@ -36,12 +36,14 @@ public abstract class XmlPanel extends XmlComponent implements XmlComponentConfi
 	@InjectXmlElement({ "flow-panel" })
 	public void addPanel(Element element) {
 		Class<? extends XmlPanel> clazz = PANEL_CONFIGS.get(element.getTagName());
-		XmlPanel panel = new XmlObjectCreator<>(element, clazz).addConstructorArgument(Map.class, componentMap).create();
-		String id = panel.getId();
+		XmlObjectCreator<? extends XmlPanel> xoc = new XmlObjectCreator<>(element, clazz);
+		xoc.setPreDecorateProcess(panel -> panel.setComponentMap(componentMap));
+		XmlPanel xmlPanel = xoc.create();
+		String id = xmlPanel.getId();
 		if (id != null) {
-			componentMap.put(id, panel);
+			componentMap.put(id, xmlPanel);
 		}
-		injectTargetPanel().add(panel.injectTargetPanel());
+		injectTargetPanel().add(xmlPanel.injectTargetPanel());
 	}
 
 	public abstract JPanel injectTargetPanel();

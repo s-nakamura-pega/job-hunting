@@ -2,13 +2,17 @@ package sn.tools.swing.flow.screen;
 
 import javax.swing.JPanel;
 
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.context.ScreenContext;
 
 public interface ScreenCreator {
 
 	void create();
 
-	void setScreenParameter(ScreenParameter parameter);
+	void reload();
+
+	void onEnter(ScreenContext context);
+
+	void onExit();
 
 	JPanel getCreatedPanel();
 

@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>sn.tools</groupId>
-			<artifactId>xml-swing-tools</artifactId>
+			<artifactId>xml-flow-swing-expansion</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

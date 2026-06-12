@@ -8,6 +8,10 @@ public class MainFrame extends FlowScreenFrame {
 
 	private static final long serialVersionUID = 1L;
 
+	public MainFrame() {
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+	}
+
 	@Override
 	protected String scanPackage() {
 		return "sn.tools.demo.screen";

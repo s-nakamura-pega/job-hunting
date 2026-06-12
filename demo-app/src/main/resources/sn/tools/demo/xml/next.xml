@@ -2,5 +2,8 @@
 <screen>
 	<flow-panel>
 		<label>入力値：</label><label id="label" />
+		<flow-panel>
+			<button id="back">戻る</button>
+		</flow-panel>
 	</flow-panel>
 </screen>

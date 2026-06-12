@@ -1,19 +1,29 @@
 package sn.tools.demo.screen;
 
+import java.awt.event.ActionEvent;
 import java.net.URL;
 
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import sn.tools.swing.flow.annotation.Screen;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.context.ScreenContext;
+import sn.tools.swing.flow.expansion.screen.XmlScreenCreator;
+import sn.tools.swing.flow.frame.FlowScreenFrame;
+import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
-import sn.tools.swing.xml.screen.XmlScreenCreator;
 
 @Screen("next")
 public class NextScreenCreator extends XmlScreenCreator {
 
 	@InjectComponent("label")
 	public JLabel label;
+
+	@InjectAction("back")
+	public void back(ActionEvent event) {
+		FlowScreenFrame.flow(event, "init", new SimpleScreenParameter());
+	}
 
 	@Override
 	protected URL xmlURL() {
@@ -26,8 +36,9 @@ public class NextScreenCreator extends XmlScreenCreator {
 	}
 
 	@Override
-	public void setScreenParameter(ScreenParameter parameter) {
-		label.setText(label.getText() + parameter.getParam("text"));
+	public void onEnter(ScreenContext context) {
+		SwingUtilities.invokeLater(() -> context.parameter().getParam("text", String.class)
+				.ifPresent(text -> label.setText(text)));
 	}
 
 }
