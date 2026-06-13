@@ -17,8 +17,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import sn.tools.function.uncheck.Uncheck;
-import sn.tools.swing.flow.context.ScreenContext;
-import sn.tools.swing.flow.screen.ScreenCreator;
+import sn.tools.swing.flow.creator.ScreenCreator;
+import sn.tools.swing.flow.parameter.ScreenParameter;
 import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
 import sn.tools.swing.xml.component.XmlComponent;
@@ -88,7 +88,7 @@ public abstract class XmlScreenCreator implements XmlPanelConfigs, ScreenCreator
 	}
 
 	@Override
-	public void onEnter(ScreenContext context) {
+	public void onEnter(ScreenParameter parameter) {
 	}
 
 	@Override
@@ -96,16 +96,8 @@ public abstract class XmlScreenCreator implements XmlPanelConfigs, ScreenCreator
 	}
 
 	@Override
-	public JPanel getCreatedPanel() {
+	public JPanel getCreation() {
 		return panel;
-	}
-
-	@Override
-	public <T extends JPanel> T getCreatedPanel(Class<T> clazz) {
-		if (clazz.isInstance(panel)) {
-			return clazz.cast(panel);
-		}
-		return null;
 	}
 
 	abstract protected URL xmlURL();

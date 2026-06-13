@@ -13,7 +13,17 @@ public class MainFrame extends FlowScreenFrame {
 	}
 
 	@Override
-	protected String scanPackage() {
+	protected String scanMenuBarPackage() {
+		return "sn.tools.demo.menu";
+	}
+
+	@Override
+	protected String initMenuBarId() {
+		return "init";
+	}
+
+	@Override
+	protected String scanScreenPackage() {
 		return "sn.tools.demo.screen";
 	}
 
