@@ -2,12 +2,15 @@ package sn.tools.swing.xml.component;
 
 import java.awt.Dimension;
 import javax.swing.JComponent;
+
+import sn.tools.swing.xml.parts.XmlParts;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 
-public abstract class XmlComponent {
+public abstract class XmlComponent implements XmlParts {
 
 	private String id;
 
+	@Override
 	public String getId() {
 		return id;
 	}

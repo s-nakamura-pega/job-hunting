@@ -1,37 +1,37 @@
 package sn.tools.demo.menu;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
+import java.awt.event.ActionEvent;
+import java.net.URL;
 
 import sn.tools.swing.flow.annotation.MenuBar;
-import sn.tools.swing.flow.creator.MenuBarCreator;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.expansion.menu.XmlMenuBarCreator;
+import sn.tools.swing.flow.frame.FlowScreenFrame;
+import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.xml.annotation.InjectAction;
 
 @MenuBar("init")
-public class DefaultMenuBar extends JMenuBar implements MenuBarCreator {
+public class DefaultMenuBar extends XmlMenuBarCreator {
 
-	private static final long serialVersionUID = 1L;
+	@InjectAction("init-screen")
+	public void flowInit(ActionEvent event) {
+		SimpleScreenParameter sp = new SimpleScreenParameter();
+		FlowScreenFrame.flow(event, "init", sp);
+	}
 
-	@Override
-	public void create() {
-		add(new JMenu("test"));
+	@InjectAction("next-screen")
+	public void flowNext(ActionEvent event) {
+		SimpleScreenParameter sp = new SimpleScreenParameter();
+		FlowScreenFrame.flow(event, "next", sp);
 	}
 
 	@Override
-	public void onEnter(ScreenParameter parameter) {
+	protected URL xmlURL() {
+		return getClass().getClassLoader().getResource("sn/tools/demo/xml/menu/init.xml");
 	}
 
 	@Override
-	public void onExit() {
-	}
-
-	@Override
-	public void reload() {	
-	}
-
-	@Override
-	public JMenuBar getCreation() {
-		return this;
+	protected void onInit() {
+		System.out.println("menu init.xml onInit");
 	}
 
 }

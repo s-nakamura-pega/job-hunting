@@ -11,8 +11,6 @@ import sn.tools.xml.bind.annotation.XmlObject;
 @XmlObject("text")
 public class XmlTextField extends XmlTextComponent {
 
-	private static final long serialVersionUID = 1L;
-
 	private final JTextField component = new JTextField();
 
 	@InjectXmlAttribute("h-align")

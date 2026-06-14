@@ -27,12 +27,12 @@ public class InitScreenCreator extends XmlScreenCreator {
 
 	@Override
 	protected URL xmlURL() {
-		return getClass().getClassLoader().getResource("sn/tools/demo/xml/init.xml");
+		return getClass().getClassLoader().getResource("sn/tools/demo/xml/panel/init.xml");
 	}
 
 	@Override
 	protected void onInit() {
-		System.out.println("init.xml onInit");
+		System.out.println("panel init.xml onInit");
 	}
 
 }

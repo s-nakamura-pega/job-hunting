@@ -27,12 +27,12 @@ public class NextScreenCreator extends XmlScreenCreator {
 
 	@Override
 	protected URL xmlURL() {
-		return getClass().getClassLoader().getResource("sn/tools/demo/xml/next.xml");
+		return getClass().getClassLoader().getResource("sn/tools/demo/xml/panel/next.xml");
 	}
 
 	@Override
 	protected void onInit() {
-		System.out.println("next.xml onInit");
+		System.out.println("panel next.xml onInit");
 	}
 
 	@Override

@@ -14,9 +14,7 @@ import sn.tools.xml.bind.creator.XmlObjectCreator;
 
 public abstract class XmlPanel extends XmlComponent implements XmlComponentConfigs, XmlPanelConfigs {
 
-	private static final long serialVersionUID = 1L;
-
-	private Map<String, XmlComponent> componentMap;
+	protected Map<String, XmlComponent> componentMap;
 
 	public void setComponentMap(Map<String, XmlComponent> componentMap) {
 		this.componentMap = componentMap;

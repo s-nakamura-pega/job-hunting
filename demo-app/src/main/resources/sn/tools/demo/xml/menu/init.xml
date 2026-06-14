@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu-bar>
+	<menu label="flow">
+		<menu label="test">
+			<item label="init" id="init-screen" />
+			<item label="next" id="next-screen" />
+		</menu>
+	</menu>
+</menu-bar>

@@ -10,8 +10,6 @@ import sn.tools.xml.bind.annotation.InjectXmlTextContent;
 
 public class XmlLabel extends XmlComponent {
 
-	private static final long serialVersionUID = 1L;
-
 	private final JLabel component = new JLabel();
 
 	@InjectXmlAttribute("h-align")
