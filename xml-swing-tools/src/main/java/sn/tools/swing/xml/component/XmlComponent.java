@@ -1,6 +1,8 @@
 package sn.tools.swing.xml.component;
 
 import java.awt.Dimension;
+import java.util.Map;
+
 import javax.swing.JComponent;
 
 import sn.tools.swing.xml.parts.XmlParts;
@@ -18,6 +20,9 @@ public abstract class XmlComponent implements XmlParts {
 	@InjectXmlAttribute("id")
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public void setComponentMap(Map<String, XmlComponent> componentMap) {
 	}
 
 	@InjectXmlAttribute("width")

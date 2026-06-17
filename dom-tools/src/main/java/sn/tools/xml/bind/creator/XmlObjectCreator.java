@@ -70,9 +70,9 @@ public class XmlObjectCreator<T> extends AbstractObjectCreator<T>{
 				InjectXmlElement ixe = method.getDeclaredAnnotation(InjectXmlElement.class);
 				if (ixe != null) {
 					String namespaceURI = ixe.namespaceURI().isBlank() ? null : ixe.namespaceURI();
-					for (String name : ixe.value()) {
+					for (String nameRegex : ixe.value()) {
 						if (Objects.equals(elem.getNamespaceURI(), namespaceURI)
-								&& Objects.equals(elem.getTagName(), name)) {
+								&& elem.getTagName().matches(String.format("^%s$", nameRegex))) {
 							injectElementValues(t, method, elem);
 							break;
 						}

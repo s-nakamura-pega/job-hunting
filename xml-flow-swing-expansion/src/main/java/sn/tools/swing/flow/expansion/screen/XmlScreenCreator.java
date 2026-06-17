@@ -21,13 +21,9 @@ public abstract class XmlScreenCreator implements ScreenCreator {
 
 	@Override
 	public void create() {
-		XmlPanel xmlPanel = CreateUtils.createXmlPanel(xmlURL(), componentMap);
+		XmlPanel xmlPanel = CreateUtils.createXmlPanelAndPutcomponentMap(xmlURL(), componentMap);
 		if (xmlPanel == null) {
 			return;
-		}
-		String id = xmlPanel.getId();
-		if (id != null) {
-			componentMap.put(id, xmlPanel);
 		}
 		Uncheck.wrapRunnable(() -> injectComponent()).run();
 		onInit();
