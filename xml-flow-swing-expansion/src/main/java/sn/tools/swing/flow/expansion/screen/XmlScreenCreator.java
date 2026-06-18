@@ -10,12 +10,14 @@ import javax.swing.JPanel;
 import sn.tools.function.uncheck.Uncheck;
 import sn.tools.swing.flow.creator.ScreenCreator;
 import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.util.ComponentUtils;
 import sn.tools.swing.xml.component.XmlComponent;
 import sn.tools.swing.xml.create.CreateUtils;
 import sn.tools.swing.xml.injection.InjectionUtils;
 import sn.tools.swing.xml.panel.XmlPanel;
 
 public abstract class XmlScreenCreator implements ScreenCreator {
+
 	private final Map<String, XmlComponent> componentMap = new ConcurrentHashMap<>();
 	private JPanel panel;
 
@@ -49,6 +51,10 @@ public abstract class XmlScreenCreator implements ScreenCreator {
 	@Override
 	public JPanel getCreation() {
 		return panel;
+	}
+
+	protected void ui(Runnable runnable) {
+		ComponentUtils.operationUI(panel, runnable);
 	}
 
 	abstract protected URL xmlURL();

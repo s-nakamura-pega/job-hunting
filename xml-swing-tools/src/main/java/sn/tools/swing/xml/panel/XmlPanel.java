@@ -21,16 +21,10 @@ public abstract class XmlPanel extends XmlComponent implements XmlComponentConfi
 		this.componentMap = componentMap;
 	}
 
-	@InjectXmlElement({ "text", "button", "check-box", "radio-button", "text-area", "label" })
+	@InjectXmlElement(".+")
 	public void addComponent(Element element) {
-		XmlComponent comp = CreateUtils.createXmlComponentAndPutcomponentMap(element, componentMap);
-		injectTargetPanel().add(comp.injectTargetComponent());
-	}
-
-	@InjectXmlElement({ ".+-panel" })
-	public void addPanel(Element element) {
-		XmlPanel xmlPanel = CreateUtils.createXmlPanelAndPutcomponentMap(element, componentMap);
-		injectTargetPanel().add(xmlPanel.injectTargetPanel());
+		CreateUtils.createXmlComponentOrXmlPanelAndPutcomponentMap(element, componentMap)
+				.ifPresent(comp -> injectTargetPanel().add(comp.injectTargetComponent()));
 	}
 
 	public abstract JPanel injectTargetPanel();

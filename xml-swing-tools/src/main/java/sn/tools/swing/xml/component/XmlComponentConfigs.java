@@ -10,7 +10,8 @@ public interface XmlComponentConfigs {
 			Map.entry("text-area", XmlTextArea.class),
 			Map.entry("button", XmlActionButton.class),
 			Map.entry("check-box", XmlCheckBox.class),
-			Map.entry("radio-button", XmlRadioButton.class)
+			Map.entry("radio-button", XmlRadioButton.class),
+			Map.entry("tabs", XmlTabs.class)
 		);
 
 }

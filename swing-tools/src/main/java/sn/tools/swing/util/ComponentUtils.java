@@ -3,6 +3,8 @@ package sn.tools.swing.util;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
@@ -12,6 +14,14 @@ import sn.tools.swing.util.definition.FocusTargetCondition;
 import sn.tools.swing.util.definition.KeyModifiers;
 
 public interface ComponentUtils {
+
+	public static void operationUI(JComponent component, Runnable runnable) {
+		if (component.isDisplayable()) {
+			SwingUtilities.invokeLater(runnable);
+		} else {
+			runnable.run();
+		}
+	}
 
 	public static UndoManager setUndo(JTextComponent text) {
 		UndoManager undoManager = new UndoManager();

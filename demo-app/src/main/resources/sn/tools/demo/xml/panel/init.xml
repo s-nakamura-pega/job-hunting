@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <screen>
-	<flow-panel>
-		<label>Name</label>
-		<text id="name" width="100"></text>
-		<button id="form">Next Screen</button>
-	</flow-panel>
+	<border-panel>
+		<tabs>
+			<tab title="input">
+				<border-panel>
+					<north><label>Name</label></north>
+					<center><text id="name" width="100"></text></center>
+					<south><button id="form">Next Screen</button></south>
+				</border-panel>
+			</tab>
+			<tab title="grid">
+				<grid-panel>
+					<label>grid</label>
+				</grid-panel>
+			</tab>
+		</tabs>
+	</border-panel>
 </screen>

@@ -31,7 +31,7 @@ public interface CreateUtils extends XmlPanelConfigs, XmlComponentConfigs {
 	}
 
 	public static XmlPanel createXmlPanelAndPutcomponentMap(Element element, Map<String, XmlComponent> componentMap) {
-		Class<? extends XmlPanel> clazz = PANEL_CONFIGS.get(element.getTagName());
+		Class<? extends XmlPanel> clazz = PANEL_CONFIGS.get(element.getLocalName());
 		XmlObjectCreator<? extends XmlPanel> xoc = new XmlObjectCreator<>(element, clazz);
 		xoc.setPreDecorateProcess(panel -> panel.setComponentMap(componentMap));
 		XmlPanel xmlPanel = xoc.create();
@@ -42,8 +42,9 @@ public interface CreateUtils extends XmlPanelConfigs, XmlComponentConfigs {
 		return xmlPanel;
 	}
 
-	public static XmlComponent createXmlComponentAndPutcomponentMap(Element element, Map<String, XmlComponent> componentMap) {
-		Class<? extends XmlComponent> clazz = COMPONENT_CONFIGS.get(element.getTagName());
+	public static XmlComponent createXmlComponentAndPutcomponentMap(Element element,
+			Map<String, XmlComponent> componentMap) {
+		Class<? extends XmlComponent> clazz = COMPONENT_CONFIGS.get(element.getLocalName());
 		XmlObjectCreator<? extends XmlComponent> xoc = new XmlObjectCreator<>(element, clazz);
 		xoc.setPreDecorateProcess(pane -> pane.setComponentMap(componentMap));
 		XmlComponent comp = xoc.create();
@@ -52,6 +53,17 @@ public interface CreateUtils extends XmlPanelConfigs, XmlComponentConfigs {
 			componentMap.put(id, comp);
 		}
 		return comp;
+	}
+
+	public static Optional<XmlComponent> createXmlComponentOrXmlPanelAndPutcomponentMap(Element element,
+			Map<String, XmlComponent> componentMap) {
+		XmlComponent component = null;
+		if (PANEL_CONFIGS.containsKey(element.getLocalName())) {
+			component = createXmlPanelAndPutcomponentMap(element, componentMap);
+		} else if (COMPONENT_CONFIGS.containsKey(element.getLocalName())) {
+			component = createXmlComponentAndPutcomponentMap(element, componentMap);
+		}
+		return Optional.ofNullable(component);
 	}
 
 	public static XmlMenuBar createXmlMenuBar(URL xmlURL, Map<String, XmlMenuItemComponent<?>> componentMap) {
