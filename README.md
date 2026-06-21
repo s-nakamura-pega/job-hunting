@@ -34,7 +34,7 @@ Swing を JavaFX の FXML のように宣言的に扱えるようにするため
 XmlComponent username = componentMap.get("username");
 
 ### ✔ Screen Flow
-FrowScreenFrame.flow(actionEvent, "login-screen", params);
+FlowScreenFrame.flow(actionEvent, "login-screen", params);
 
 ### ✔ MenuBar DSL  
 メニューも XML で定義可能。
