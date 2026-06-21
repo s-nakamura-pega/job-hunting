@@ -34,7 +34,7 @@ Swing を JavaFX の FXML のように宣言的に扱えるようにするため
 XmlComponent username = componentMap.get("username");
 
 ### ✔ Screen Flow
-flowController.move("login-screen", params);
+FrowScreenFrame.flow(actionEvent, "login-screen", params);
 
 ### ✔ MenuBar DSL  
 メニューも XML で定義可能。
@@ -45,7 +45,7 @@ UX を改善するユーティリティ群。
 ---
 
 ## 📦 Installation
-Java 17 以上で動作。(pom.xmlでは25を定義。)
+Java 25 以上で動作。
 
 （Maven 化していない場合は jar を直接追加）
 
