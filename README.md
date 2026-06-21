@@ -158,10 +158,10 @@ sn.tools.xml.bind
 ---
 
 ## 🧪 Sample Application
-public class Main {  
-  public static void main(String[] args) {  
-    FlowScreenFrame.start("main-screen.xml");  
-  }  
+public class SystemMain {
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
+	}
 }
 
 ---
