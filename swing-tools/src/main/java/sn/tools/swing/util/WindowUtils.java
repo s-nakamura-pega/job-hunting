@@ -158,7 +158,7 @@ public interface WindowUtils {
     }
 
     public static void setPopupMenuOnMenuKey(JRootPane rootPane, JPopupMenu popupMenu) {
-        ActionListener kl = event -> {
+        ActionListener kl = _ -> {
             if (popupMenu.isVisible()) {
                 popupMenu.setVisible(false);
             } else {

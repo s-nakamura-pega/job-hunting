@@ -7,6 +7,7 @@ import javax.swing.JSplitPane;
 
 import org.w3c.dom.Element;
 
+import sn.tools.function.uncheck.Uncheck;
 import sn.tools.swing.xml.create.CreateUtils;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlElement;
@@ -35,21 +36,15 @@ public class XmlSplitPane extends XmlComponent {
 	// divider="200"
 	@InjectXmlAttribute("divider")
 	public void setDividerLocation(String value) {
-		try {
-			splitPane.setDividerLocation(Integer.parseInt(value));
-		} catch (NumberFormatException e) {
-			// 無視（デフォルトのまま）
-		}
+		Uncheck.wrapRunnable(() -> splitPane.setDividerLocation(Integer.parseInt(value)), _ -> {
+		});
 	}
 
 	// resize-weight="0.0〜1.0"
 	@InjectXmlAttribute("resize-weight")
 	public void setResizeWeight(String value) {
-		try {
-			splitPane.setResizeWeight(Double.parseDouble(value));
-		} catch (NumberFormatException e) {
-			// 無視
-		}
+		Uncheck.wrapRunnable(() -> splitPane.setResizeWeight(Double.parseDouble(value)), _ -> {
+		});
 	}
 
 	// continuous="true|false"

@@ -17,14 +17,12 @@ public class XmlFlowPanel extends XmlPanel {
 
 	@InjectXmlAttribute("align")
 	public void injectAlignment(String align) {
-		FlowLayout fl = (FlowLayout) panel.getLayout();
-
 		switch (align.toLowerCase()) {
-		case "left" -> fl.setAlignment(FlowLayout.LEFT);
-		case "center" -> fl.setAlignment(FlowLayout.CENTER);
-		case "right" -> fl.setAlignment(FlowLayout.RIGHT);
-		case "leading" -> fl.setAlignment(FlowLayout.LEADING);
-		case "trailing" -> fl.setAlignment(FlowLayout.TRAILING);
+		case "left" -> layout.setAlignment(FlowLayout.LEFT);
+		case "center" -> layout.setAlignment(FlowLayout.CENTER);
+		case "right" -> layout.setAlignment(FlowLayout.RIGHT);
+		case "leading" -> layout.setAlignment(FlowLayout.LEADING);
+		case "trailing" -> layout.setAlignment(FlowLayout.TRAILING);
 		default -> throw new IllegalArgumentException("Unknown align: " + align);
 		}
 	}

@@ -46,6 +46,10 @@ public abstract class XmlMenuBarCreator implements MenuBarCreator {
 	}
 
 	@Override
+	public void onDisplay(ScreenParameter parameter) {
+	}
+
+	@Override
 	public void onExit() {
 	}
 

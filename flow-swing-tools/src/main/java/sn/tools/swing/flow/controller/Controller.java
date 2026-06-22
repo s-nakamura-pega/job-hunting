@@ -57,6 +57,7 @@ public abstract class Controller<T, A extends Annotation> {
 		}
 		creator.onEnter(context.parameter());
 		context.flow(creator.getCreation());
+		creator.onDisplay(context.parameter());
 		String oldId = currentId.getAndSet(id);
 		if (oldId != null) {
 			SwingUtilities.invokeLater(() -> creatorMap.get(oldId).onExit());

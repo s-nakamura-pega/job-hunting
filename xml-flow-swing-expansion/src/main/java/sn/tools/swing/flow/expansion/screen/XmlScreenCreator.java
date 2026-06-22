@@ -28,8 +28,8 @@ public abstract class XmlScreenCreator implements ScreenCreator {
 			return;
 		}
 		Uncheck.wrapRunnable(() -> injectComponent()).run();
-		onInit();
 		panel = xmlPanel.injectTargetPanel();
+		onInit();
 	}
 
 	private void injectComponent() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
@@ -42,6 +42,10 @@ public abstract class XmlScreenCreator implements ScreenCreator {
 
 	@Override
 	public void onEnter(ScreenParameter parameter) {
+	}
+
+	@Override
+	public void onDisplay(ScreenParameter parameter) {
 	}
 
 	@Override

@@ -32,13 +32,13 @@ public interface ComponentUtils {
 				undoManager.addEdit(e.getEdit());
 			}
 		});
-		ActionListener undo = event -> {
+		ActionListener undo = _ -> {
 			if (undoManager.canUndo()) {
 				undoManager.undo();
 			}
 		};
 		KeyUtils.setKeyAndAction(text, "Undo", undo, FocusTargetCondition.COMPONENT, KeyEvent.VK_Z, KeyModifiers.CTRL);
-		ActionListener redo = event -> {
+		ActionListener redo = _ -> {
 			if (undoManager.canRedo()) {
 				undoManager.redo();
 			}

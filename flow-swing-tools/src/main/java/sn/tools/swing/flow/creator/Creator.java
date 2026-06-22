@@ -7,6 +7,8 @@ public interface Creator<T> {
 	void create();
 
 	void onEnter(ScreenParameter parameter);
+	
+	void onDisplay(ScreenParameter parameter);
 
 	void onExit();
 

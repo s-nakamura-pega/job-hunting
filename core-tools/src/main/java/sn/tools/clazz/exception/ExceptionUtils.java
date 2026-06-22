@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 public class ExceptionUtils {
 
 	public static Exception getRootCause(Exception e) {
-		return getRootCause(e, target -> false);
+		return getRootCause(e, _ -> false);
 	}
 
 	public static Exception getRootCause(Exception e, Predicate<Exception> predicate) {

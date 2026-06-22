@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen>
+	<border-panel>
+		<north>
+			<label h-align="center" font-size="16">検索条件</label>
+		</north>
+		<center>
+			<flow-panel baseline="true" vgap="50">
+			<grid-panel cols="2" rows="3" vgap="10" hgap="20">
+				<label h-align="right" font-style="BOLD">顧客名</label>
+				<text id="name" width="300"></text>
+				<label h-align="right" font-style="BOLD">住所</label>
+				<text id="address" width="300"></text>
+				<label h-align="right" font-style="BOLD">TEL</label>
+				<text id="tel" width="300"></text>
+			</grid-panel>
+			</flow-panel>
+		</center>
+		<south>
+			<flow-panel >
+				<button id="search" align="center">検索</button>
+			</flow-panel>
+		</south>
+	</border-panel>
+</screen>

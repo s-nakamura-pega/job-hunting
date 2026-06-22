@@ -27,7 +27,7 @@ public class MainFrame extends FlowScreenFrame {
 
 	@Override
 	protected String initScreenId() {
-		return "init";
+		return "customers_search";
 	}
 
 	@Override

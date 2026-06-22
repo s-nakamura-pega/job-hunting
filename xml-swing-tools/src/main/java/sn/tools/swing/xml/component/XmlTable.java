@@ -6,12 +6,25 @@ import javax.swing.table.DefaultTableModel;
 
 import org.w3c.dom.Element;
 
+import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlElement;
 
 public class XmlTable extends XmlComponent {
 
 	private final DefaultTableModel model = new DefaultTableModel();
-	private final JTable component = new JTable(model);
+	private JTable component = new JTable(model);
+
+	@InjectXmlAttribute("editable")
+	public void setEditable(String editable) {
+		if (!Boolean.getBoolean(editable)) {
+			component = new JTable(model) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
+		}
+	}
 
 	@InjectXmlElement("column")
 	public void injectColumn(Element element) {

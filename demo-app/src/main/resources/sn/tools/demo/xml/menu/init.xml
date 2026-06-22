@@ -4,6 +4,7 @@
 		<menu label="test">
 			<item label="init" id="init-screen" />
 			<item label="next" id="next-screen" />
+			<item label="customers_search" id="customers_search-screen" />
 		</menu>
 	</menu>
 </menu-bar>

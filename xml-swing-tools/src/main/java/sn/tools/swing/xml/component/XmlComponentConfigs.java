@@ -11,7 +11,13 @@ public interface XmlComponentConfigs {
 			Map.entry("button", XmlActionButton.class),
 			Map.entry("check-box", XmlCheckBox.class),
 			Map.entry("radio-button", XmlRadioButton.class),
-			Map.entry("tabs", XmlTabs.class)
+			Map.entry("tabs", XmlTabs.class),
+			Map.entry("combo-box", XmlCombobox.class),
+			Map.entry("list", XmlList.class),
+			Map.entry("password", XmlPasswordField.class),
+			Map.entry("scroll", XmlScroll.class),
+			Map.entry("split", XmlSplitPane.class),
+			Map.entry("table", XmlTable.class)
 		);
 
 }

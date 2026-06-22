@@ -22,7 +22,7 @@ import static sn.tools.file.jar.JarFiles.walk;
 public class PackageScanner {
 
 	public static List<Class<?>> getClassList(String packageName) throws IOException, ClassNotFoundException {
-		return getClassList(packageName, clazz -> true);
+		return getClassList(packageName, _ -> true);
 	}
 
 	public static List<Class<?>> getClassList(String packageName, Predicate<Class<?>> predicate)

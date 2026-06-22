@@ -1,9 +1,8 @@
 package sn.tools.swing.xml.component;
 
-import java.lang.reflect.Field;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlTextContent;
@@ -14,22 +13,26 @@ public class XmlLabel extends XmlComponent {
 
 	@InjectXmlAttribute("h-align")
 	public void injectHorizontalAlignment(String alignment) {
-		try {
-			Field field = JLabel.class.getField(alignment.toUpperCase());
-			component.setHorizontalAlignment(field.getInt(null));
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new IllegalArgumentException("Invalid alignment: " + alignment, e);
-		}
+		int align = switch (alignment.toLowerCase()) {
+		case "left" -> SwingConstants.LEFT;
+		case "center" -> SwingConstants.CENTER;
+		case "right" -> SwingConstants.RIGHT;
+		case "leading" -> SwingConstants.LEADING;
+		case "trailing" -> SwingConstants.TRAILING;
+		default -> throw new IllegalArgumentException("Invalid alignment: " + alignment);
+		};
+		component.setHorizontalAlignment(align);
 	}
 
 	@InjectXmlAttribute("v-align")
 	public void injectVerticalAlignment(String alignment) {
-		try {
-			Field field = JLabel.class.getField(alignment.toUpperCase());
-			component.setVerticalAlignment(field.getInt(null));
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new IllegalArgumentException("Invalid vertical alignment: " + alignment, e);
-		}
+		int align = switch (alignment.toLowerCase()) {
+		case "top" -> SwingConstants.TOP;
+		case "center" -> SwingConstants.CENTER;
+		case "bottom" -> SwingConstants.BOTTOM;
+		default -> throw new IllegalArgumentException("Invalid alignment: " + alignment);
+		};
+		component.setVerticalAlignment(align);
 	}
 
 	@InjectXmlTextContent

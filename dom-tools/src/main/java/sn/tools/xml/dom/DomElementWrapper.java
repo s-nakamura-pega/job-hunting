@@ -43,7 +43,7 @@ public class DomElementWrapper implements Element {
 	 * @return エレメント要素のリスト
 	 */
 	public List<Element> getChildElementList() {
-		return getChildElementList(elem -> true);
+		return getChildElementList(_ -> true);
 	}
 
 	/**

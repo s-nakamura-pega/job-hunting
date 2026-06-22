@@ -182,7 +182,7 @@ public class DBExecutor {
 			return -1;
 		}
 		List<String> labelList = new ArrayList<>(paramMap.keySet());
-		List<String> bindList = labelList.stream().map(k -> "?").toList();
+		List<String> bindList = labelList.stream().map(_ -> "?").toList();
 		List<Object> valueList = new ArrayList<>(paramMap.values());
 		String sql = String.format("INSERT INTO %s(%s) VALUES(%s)",
 				dbTable.value(),
