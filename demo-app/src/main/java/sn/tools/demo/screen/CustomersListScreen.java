@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import sn.tools.db.sql.Where;
 import sn.tools.demo.db.DBManager;
 import sn.tools.swing.flow.annotation.Screen;
 import sn.tools.swing.flow.expansion.screen.XmlScreenCreator;
@@ -40,33 +41,14 @@ public class CustomersListScreen extends XmlScreenCreator {
 		Optional<String> address = sp.getParam("address", String.class);
 		Optional<String> tel = sp.getParam("tel", String.class);
 		StringBuilder sql = new StringBuilder("SELECT * FROM customers");
-		List<Object> binds = new ArrayList<>();
-		if ((name.isPresent() && !name.get().isBlank()) || (address.isPresent() && !address.get().isBlank())
-				|| (tel.isPresent() && !tel.get().isBlank())) {
-			sql.append(" WHERE");
-		}
-		if (name.isPresent() && !name.get().isBlank()) {
-			sql.append(" name like ?");
-			binds.add("%" + name.get() + "%");
-		}
-		if (address.isPresent() && !address.get().isBlank()) {
-			if (name.isPresent() && !name.get().isBlank()) {
-				sql.append(" AND");	
-			}
-			sql.append(" address like ?");
-			binds.add("%" + address.get() + "%");
-		}
-		if (tel.isPresent() && !tel.get().isBlank()) {
-			if ((name.isPresent() && !name.get().isBlank())
-					|| (address.isPresent() && !address.get().isBlank())) {
-				sql.append(" AND");	
-			}
-			sql.append(" phone like ?");
-			binds.add("%" + tel.get() + "%");
-		}
-		sql.append(" ORDER BY id ASC");
+		Where where = new Where();
+		where.add("name like ?", _ -> name.isEmpty() || name.get().isBlank(), name.map(v -> "%" + v + "%").orElse(null));
+		where.add("address like ?", _ -> address.isEmpty() || address.get().isBlank(), address.map(v -> "%" + v + "%").orElse(null));
+		where.add("phone like ?", _ -> tel.isEmpty() || tel.get().isBlank(), tel.map(v -> "%" + v + "%").orElse(null));
+		sql.append(where);
+		sql.append("ORDER BY id ASC");
 		System.out.println(sql);
-		List<Map<String, Object>> result = DBManager.getDBExecutor().query(sql.toString(), binds.toArray());
+		List<Map<String, Object>> result = DBManager.getDBExecutor().query(sql.toString(), where.getBinds());
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setRowCount(0);
 		if (!result.isEmpty()) {
