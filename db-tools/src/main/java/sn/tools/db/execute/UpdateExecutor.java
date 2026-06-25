@@ -1,43 +1,25 @@
 package sn.tools.db.execute;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import sn.tools.db.sql.SqlBuilder;
 
-public class UpdateExecutor implements DBActionExecutor<Integer> {
+public class UpdateExecutor extends SqlBuilder<UpdateExecutor> implements DBActionExecutor<Integer> {
 
 	private final DBExecutor executor;
-	private String sql;
-	private final List<Object> paramList = new ArrayList<>();
 
 	public UpdateExecutor(DBExecutor executor) {
 		this.executor = executor;
 	}
 
-	public UpdateExecutor setSql(String sql) {
-		this.sql = sql;
-		return this;
-	}
-
-	public UpdateExecutor addParams(Object... params) {
-		paramList.addAll(Arrays.asList(params));
-		return this;
-	}
-
-	public UpdateExecutor addParam(Object param) {
-		paramList.add(param);
-		return this;
-	}
-
+	@Override
 	public Integer execute() {
-		if (sql == null) {
+		if (sql.length() < 1) {
 			throw new IllegalArgumentException("SQLが設定されていません。");
 		}
 		try {
-			return executor.update(sql, paramList.toArray());
+			return executor.update(toString(), getBinds());
 		} finally {
-			this.sql = null;
-			this.paramList.clear();
+			clear();
 		}
 	}
+
 }

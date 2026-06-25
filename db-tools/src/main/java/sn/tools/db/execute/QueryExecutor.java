@@ -6,21 +6,15 @@ import java.util.List;
 
 import sn.tools.clazz.creator.ObjectCreator;
 import sn.tools.db.response.DBResponse;
+import sn.tools.db.sql.SqlBuilder;
 
-public class QueryExecutor implements DBActionExecutor<List<DBResponse>> {
+public class QueryExecutor extends SqlBuilder<QueryExecutor> implements DBActionExecutor<List<DBResponse>> {
 
 	private final DBExecutor executor;
-	private String sql;
 	private final List<ObjectCreator<?>> creatorList = new ArrayList<>();
-	private final List<Object> paramList = new ArrayList<>();
 
 	public QueryExecutor(DBExecutor executor) {
 		this.executor = executor;
-	}
-
-	public QueryExecutor setSql(String sql) {
-		this.sql = sql;
-		return this;
 	}
 
 	public QueryExecutor addCreators(ObjectCreator<?>... creators) {
@@ -33,28 +27,22 @@ public class QueryExecutor implements DBActionExecutor<List<DBResponse>> {
 		return this;
 	}
 
-	public QueryExecutor addParams(Object... params) {
-		paramList.addAll(Arrays.asList(params));
-		return this;
-	}
-
-	public QueryExecutor addParam(Object param) {
-		paramList.add(param);
-		return this;
-	}
-
 	@Override
 	public List<DBResponse> execute() {
-		if (sql == null) {
+		if (sql.length() < 1) {
 			throw new IllegalArgumentException("SQLが設定されていません。");
 		}
 		try {
-			return executor.query(sql, List.copyOf(creatorList), paramList.toArray());
+			return executor.query(toString(), List.copyOf(creatorList), getBinds());
 		} finally {
-			this.sql = null;
-			this.creatorList.clear();
-			this.paramList.clear();
+			clear();
 		}
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		this.creatorList.clear();
 	}
 
 }

@@ -31,7 +31,7 @@ public class DBManager {
 			for (String stmt : statements) {
 				String s = stmt.trim();
 				if (!s.isEmpty()) {
-					exec.setSql(s).execute();
+					exec.append(s).execute();
 				}
 			}
 		} catch (IOException e) {
