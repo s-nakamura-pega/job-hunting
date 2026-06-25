@@ -21,7 +21,7 @@ public abstract class SqlBuilder<T extends SqlBuilder<?>> {
 	}
 
 	public T append(String condition, Object... binds) {
-		return append(condition, true, binds);
+		return appendWithValidate(condition, true, binds);
 	}
 
 	private void checkBindCount(String condition, Object[] binds) {
