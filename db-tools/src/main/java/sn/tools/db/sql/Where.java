@@ -12,26 +12,26 @@ public class Where extends SqlBuilder<Where> {
 	}
 
 	@Override
-	public Where append(String condition, boolean isValid, Object... binds) {
+	public Where appendWithValidate(String condition, boolean isValid, Object... binds) {
 		if (!isValid) {
 			return this;
 		}
 		hasAndCondition = true;
-		return (Where) super.append("AND " + condition, true, binds);
+		return (Where) super.appendWithValidate("AND " + condition, true, binds);
 	}
 
 	@Override
 	public Where append(String condition, Object... binds) {
-		return append(condition, !hasNullBinds(binds), binds);
+		return appendWithValidate(condition, !hasNullBinds(binds), binds);
 	}
 
-	public Where appendOr(String condition, boolean isValid, Object... binds) {
-		return hasAndCondition ? (Where) super.append("OR " + condition, isValid, binds)
+	public Where appendOrWithValidate(String condition, boolean isValid, Object... binds) {
+		return hasAndCondition ? (Where) super.appendWithValidate("OR " + condition, isValid, binds)
 				: append(condition, isValid, binds);
 	}
 
 	public Where appendOr(String condition, Object... binds) {
-		return appendOr(condition, !hasNullBinds(binds), binds);
+		return appendOrWithValidate(condition, !hasNullBinds(binds), binds);
 	}
 
 	public static boolean hasNullBinds(Object[] binds) {

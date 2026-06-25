@@ -10,7 +10,7 @@ public abstract class SqlBuilder<T extends SqlBuilder<?>> {
 	protected final List<Object> bindList = new ArrayList<>();
 
 	@SuppressWarnings("unchecked")
-	public T append(String condition, boolean isValid, Object... binds) {
+	public T appendWithValidate(String condition, boolean isValid, Object... binds) {
 		if (!isValid) {
 			return (T) this;
 		}
