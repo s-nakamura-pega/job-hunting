@@ -17,7 +17,7 @@ public class Where extends SqlBuilder<Where> {
 			return this;
 		}
 		hasAndCondition = true;
-		return (Where) super.appendWithValidate("AND " + condition, true, binds);
+		return super.appendWithValidate("AND " + condition, true, binds);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class Where extends SqlBuilder<Where> {
 
 	public Where appendOrWithValidate(String condition, boolean isValid, Object... binds) {
 		return hasAndCondition ? (Where) super.appendWithValidate("OR " + condition, isValid, binds)
-				: append(condition, isValid, binds);
+				: appendWithValidate(condition, isValid, binds);
 	}
 
 	public Where appendOr(String condition, Object... binds) {
