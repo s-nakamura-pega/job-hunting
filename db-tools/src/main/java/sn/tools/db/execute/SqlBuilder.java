@@ -1,10 +1,10 @@
-package sn.tools.db.sql;
+package sn.tools.db.execute;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class SqlBuilder<T extends SqlBuilder<?>> {
+public sealed abstract class SqlBuilder<T extends SqlBuilder<?>> permits QueryExecutor, UpdateExecutor, Where {
 
 	protected final StringBuilder sql = new StringBuilder();
 	protected final List<Object> bindList = new ArrayList<>();
@@ -54,6 +54,10 @@ public abstract class SqlBuilder<T extends SqlBuilder<?>> {
 
 	public T append(SqlBuilder<?> condition) {
 		return append(condition, true);
+	}
+
+	public String watchParameters() {
+		return String.format("SQL: %s, Binds: %s", sql.toString(), bindList.toString());
 	}
 
 	@Override

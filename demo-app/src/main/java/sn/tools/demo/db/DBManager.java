@@ -10,8 +10,6 @@ import org.w3c.dom.Element;
 
 import sn.tools.db.connect.DBConnector;
 import sn.tools.db.execute.DBExecutor;
-import sn.tools.db.execute.DeleteExecutor;
-import sn.tools.db.execute.InsertExecutor;
 import sn.tools.db.execute.QueryExecutor;
 import sn.tools.db.execute.UpdateExecutor;
 import sn.tools.xml.bind.creator.XmlObjectCreator;
@@ -56,14 +54,6 @@ public class DBManager {
 
 	public static UpdateExecutor getUpdateExecutor() {
 		return new UpdateExecutor(getDBExecutor());
-	}
-
-	public static InsertExecutor getInsertExecutor() {
-		return new InsertExecutor(getDBExecutor());
-	}
-
-	public static DeleteExecutor getDeleteExecutor() {
-		return new DeleteExecutor(getDBExecutor());
 	}
 
 }

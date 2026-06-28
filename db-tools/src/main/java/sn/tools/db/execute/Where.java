@@ -1,9 +1,9 @@
-package sn.tools.db.sql;
+package sn.tools.db.execute;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Where extends SqlBuilder<Where> {
+public final class Where extends SqlBuilder<Where> {
 
 	private boolean hasAndCondition = false;
 

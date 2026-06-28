@@ -6,9 +6,8 @@ import java.util.List;
 
 import sn.tools.clazz.creator.ObjectCreator;
 import sn.tools.db.response.DBResponse;
-import sn.tools.db.sql.SqlBuilder;
 
-public class QueryExecutor extends SqlBuilder<QueryExecutor> implements DBActionExecutor<List<DBResponse>> {
+public final class QueryExecutor extends SqlBuilder<QueryExecutor> implements DBActionExecutor<List<DBResponse>> {
 
 	private final DBExecutor executor;
 	private final List<ObjectCreator<?>> creatorList = new ArrayList<>();

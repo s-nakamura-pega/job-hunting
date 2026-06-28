@@ -12,8 +12,8 @@ import javax.swing.table.DefaultTableModel;
 
 import sn.tools.clazz.creator.SimpleObjectCreator;
 import sn.tools.db.execute.QueryExecutor;
+import sn.tools.db.execute.Where;
 import sn.tools.db.response.DBResponse;
-import sn.tools.db.sql.Where;
 import sn.tools.demo.db.DBManager;
 import sn.tools.demo.entity.Customers;
 import sn.tools.swing.flow.annotation.Screen;
@@ -43,14 +43,18 @@ public class CustomersListScreen extends XmlScreenCreator {
 		Optional<String> address = sp.getParam("address", String.class);
 		Optional<String> tel = sp.getParam("tel", String.class);
 
-		Where where = new Where().append("name like ?", name.map(v -> "%" + v + "%").orElse(null))
-				.append("address like ?", address.map(v -> "%" + v + "%").orElse(null))
-				.append("phone like ?", tel.map(v -> "%" + v + "%").orElse(null));
+		Where where = new Where()
+				.appendWithValidate("name like ?", name.filter(v -> !v.isBlank()).isPresent(),
+						name.map(v -> "%" + v + "%").orElse(null))
+				.appendWithValidate("address like ?", address.filter(v -> !v.isBlank()).isPresent(),
+						address.map(v -> "%" + v + "%").orElse(null))
+				.appendWithValidate("phone like ?", tel.filter(v -> !v.isBlank()).isPresent(),
+						tel.map(v -> "%" + v + "%").orElse(null));
 
 		QueryExecutor sql = DBManager.getQueryExecutor();
 		sql.append("SELECT * FROM customers").append(where).append("ORDER BY id ASC")
 				.addCreator(new SimpleObjectCreator<>(Customers.class));
-		System.out.println(sql);
+		System.out.println(sql.watchParameters());
 
 		List<DBResponse> responseList = sql.execute();
 

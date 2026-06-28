@@ -1,8 +1,6 @@
 package sn.tools.db.execute;
 
-import sn.tools.db.sql.SqlBuilder;
-
-public class UpdateExecutor extends SqlBuilder<UpdateExecutor> implements DBActionExecutor<Integer> {
+public final class UpdateExecutor extends SqlBuilder<UpdateExecutor> implements DBActionExecutor<Integer> {
 
 	private final DBExecutor executor;
 
