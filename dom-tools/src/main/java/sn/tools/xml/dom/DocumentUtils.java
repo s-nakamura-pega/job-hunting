@@ -2,6 +2,7 @@ package sn.tools.xml.dom;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.net.URL;
@@ -19,6 +20,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
 import sn.tools.function.uncheck.Uncheck;
 import sn.tools.function.uncheck.Uncheck.ExceptionHandler;
 import sn.tools.function.uncheck.Uncheck.ThrowableRunnable;
@@ -45,6 +48,21 @@ public class DocumentUtils {
 				DocumentBuilder builder = factory.newDocumentBuilder();
 				return builder.parse(is);
 			}
+		};
+		ExceptionHandler<Document> handler = e -> {
+			if (e instanceof IOException ioe) {
+				throw new UncheckedIOException(ioe);
+			}
+			throw new RuntimeException(e);
+		};
+		return Uncheck.wrapSupplier(supplier, handler).get();
+	}
+
+	public static Document read(String xml, boolean namespaceAware) {
+		ThrowableSupplier<Document> supplier = () -> {
+			DocumentBuilderFactory factory = createFactory(namespaceAware);
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			return builder.parse(new InputSource(new StringReader(xml)));
 		};
 		ExceptionHandler<Document> handler = e -> {
 			if (e instanceof IOException ioe) {
