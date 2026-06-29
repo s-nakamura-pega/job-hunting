@@ -11,7 +11,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URL;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.text.Style;
 
@@ -19,6 +23,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -28,8 +35,17 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.undo.UndoManager;
 
+import sn.tools.function.uncheck.Uncheck;
 import sn.tools.swing.util.ComponentUtils;
 import sn.tools.swing.util.WindowUtils;
+import sn.tools.swing.xml.annotation.InjectComponent;
+import sn.tools.swing.xml.component.XmlComponentConfigs;
+import sn.tools.swing.xml.create.CreateUtils;
+import sn.tools.swing.xml.injection.InjectionUtils;
+import sn.tools.swing.xml.menu.XmlMenuBar;
+import sn.tools.swing.xml.menu.XmlMenuItemComponent;
+import sn.tools.swing.xml.panel.XmlPanelConfigs;
+import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 
 public class XmlPanelFactoryFrame extends JFrame {
 
@@ -57,17 +73,21 @@ public class XmlPanelFactoryFrame extends JFrame {
 	private final FlowLayout btnLayout = new FlowLayout();
 
 	private final JButton executeBtn = new JButton("TEST");
-	private final JButton saveBtn = new JButton("SAVE");
-	private final JButton loadBtn = new JButton("LOAD");
 
 	private final PrintStream originalOut;
 	private final PrintStream originalErr;
+
+	private JMenu panelMenu;	
+	private JMenu compMenu;
+
+	private final Map<String, XmlMenuItemComponent<?>> componentMap = new ConcurrentHashMap<String, XmlMenuItemComponent<?>>();
 
 	public XmlPanelFactoryFrame() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		Dimension frameSize = WindowUtils.getScreenRatioSize(0.7);
 		setSize(frameSize);
 		setLocationRelativeTo(null);
+		setMenubar();
 		Dimension textSize = new Dimension(frameSize.width / 2, frameSize.height);
 		xmlWriterScroll.setPreferredSize(textSize);
 		xmlWriterArea.setText(DEFAULT_VALUE);
@@ -92,12 +112,41 @@ public class XmlPanelFactoryFrame extends JFrame {
 		btnPanel.setLayout(btnLayout);
 		btnLayout.setAlignment(FlowLayout.CENTER);
 		btnPanel.add(executeBtn);
-		btnPanel.add(loadBtn);
-		btnPanel.add(saveBtn);
 		add(btnPanel, BorderLayout.SOUTH);
 		executeBtn.addActionListener(this::test);
-		loadBtn.addActionListener(this::loadFile);
-		saveBtn.addActionListener(this::saveFile);
+	}
+
+	private void setMenubar() {
+		URL url = getClass().getClassLoader().getResource("sn/tools/swing/factory/frame/menu/menu.xml");
+		XmlMenuBar xmlMenuBar = CreateUtils.createXmlMenuBar(url, componentMap);
+		setJMenuBar(xmlMenuBar.injectTargetMenuBar());
+		Uncheck.wrapRunnable(() -> InjectionUtils.injectMenuItem(this, componentMap)).run();
+		setPanelMenu();
+		setCompMenu();
+	}
+
+	private void setPanelMenu() {
+		XmlPanelConfigs.PANEL_CONFIGS.forEach((k, v) -> {
+			JMenuItem item = new JMenuItem(k);
+			panelMenu.add(item);
+			StringBuilder sb = new StringBuilder("-- Attributes --\n");
+			Arrays.stream(v.getMethods()).filter(m -> m.isAnnotationPresent(InjectXmlAttribute.class))
+					.map(m -> m.getAnnotation(InjectXmlAttribute.class))
+					.forEach(att -> sb.append(String.format("%s %s\n", Arrays.toString(att.value()), att.explanation())));
+			item.addActionListener(_ -> JOptionPane.showMessageDialog(this, sb.toString()));
+		});
+	}
+
+	private void setCompMenu() {
+		XmlComponentConfigs.COMPONENT_CONFIGS.forEach((k, v) -> {
+			JMenuItem item = new JMenuItem(k);
+			compMenu.add(item);
+			StringBuilder sb = new StringBuilder("-- Attributes --\n");
+			Arrays.stream(v.getMethods()).filter(m -> m.isAnnotationPresent(InjectXmlAttribute.class))
+					.map(m -> m.getAnnotation(InjectXmlAttribute.class)).forEach(att -> sb
+							.append(String.format("%s %s\n", Arrays.toString(att.value()), att.explanation())));
+			item.addActionListener(_ -> JOptionPane.showMessageDialog(this, sb.toString()));
+		});
 	}
 
 	public void test(ActionEvent event) {
@@ -156,6 +205,16 @@ public class XmlPanelFactoryFrame extends JFrame {
 			originalErr.println("appendConsole failed:");
 			e.printStackTrace(originalErr);
 		}
+	}
+
+	@InjectComponent("panel-menu")
+	public void setPanelItem(JMenu panelMenu) {
+		this.panelMenu = panelMenu;
+	}
+
+	@InjectComponent("comp-menu")
+	public void setCompMenu(JMenu compMenu) {
+		this.compMenu = compMenu;
 	}
 
 	private class TextAreaOutputStream extends OutputStream {

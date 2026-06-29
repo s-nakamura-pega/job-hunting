@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu-bar>
+	<menu label="File">
+		<item label="Load" action="loadFile" />
+		<item label="Save" action="saveFile" />
+	</menu>
+	<menu label="Help">
+		<menu label="Panel" id="panel-menu"/>
+		<menu label="Component" id="comp-menu"/>
+	</menu>
+</menu-bar>
