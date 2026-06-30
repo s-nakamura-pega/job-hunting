@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen>
+	<border-panel>
+		<center>
+			<hbox-panel>
+				<scroll id="write-scroll">
+					<text-area id="write-area" font-size="14" />
+				</scroll>
+				<scroll id="console-scroll">
+					<text-pane id="console" background-color="#303030" font-size="16" />
+				</scroll>
+			</hbox-panel>
+		</center>
+		<south>
+			<flow-panel align="center">
+				<button id="test">TEST</button>
+			</flow-panel>
+		</south>
+	</border-panel>
+</screen>

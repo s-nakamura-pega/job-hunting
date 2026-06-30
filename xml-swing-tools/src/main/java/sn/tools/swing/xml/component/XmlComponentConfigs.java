@@ -17,7 +17,8 @@ public interface XmlComponentConfigs {
 			Map.entry("password", XmlPasswordField.class),
 			Map.entry("scroll", XmlScroll.class),
 			Map.entry("split", XmlSplitPane.class),
-			Map.entry("table", XmlTable.class)
+			Map.entry("table", XmlTable.class),
+			Map.entry("text-pane", XmlTextPane.class)
 		);
 
 }

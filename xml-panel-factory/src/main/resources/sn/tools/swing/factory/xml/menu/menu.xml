@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu-bar>
+	<menu label="File" mnemonic="f">
+		<item label="Load" action="loadFile" mnemonic="l" />
+		<item label="Save" action="saveFile" mnemonic="s" />
+	</menu>
+	<menu label="Help" mnemonic="h">
+		<menu label="Panel" id="panel-menu" mnemonic="p"/>
+		<menu label="Component" id="comp-menu" mnemonic="c"/>
+	</menu>
+</menu-bar>

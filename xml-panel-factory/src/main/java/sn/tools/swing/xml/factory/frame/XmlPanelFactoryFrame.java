@@ -1,9 +1,7 @@
 package sn.tools.swing.xml.factory.frame;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,14 +11,15 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.text.Style;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -33,46 +32,39 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import javax.swing.undo.UndoManager;
 
 import sn.tools.function.uncheck.Uncheck;
-import sn.tools.swing.util.ComponentUtils;
 import sn.tools.swing.util.WindowUtils;
+import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
+import sn.tools.swing.xml.component.XmlComponent;
 import sn.tools.swing.xml.component.XmlComponentConfigs;
 import sn.tools.swing.xml.create.CreateUtils;
 import sn.tools.swing.xml.injection.InjectionUtils;
 import sn.tools.swing.xml.menu.XmlMenuBar;
 import sn.tools.swing.xml.menu.XmlMenuItemComponent;
+import sn.tools.swing.xml.panel.XmlPanel;
 import sn.tools.swing.xml.panel.XmlPanelConfigs;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
+import sn.tools.xml.bind.annotation.InjectXmlElement;
 
 public class XmlPanelFactoryFrame extends JFrame {
 
 	public static final String DEFAULT_VALUE = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 			.append("<screen>\n")
 			.append("\t<border-panel>\n")
-			.append("\t\t<label font-style=\"BOLD\" font-size=\"20\">XmlPanelFactoryFrame</label>\n")
+			.append("\t\t<label font-style=\"BOLD\" font-size=\"20\" h-align=\"center\">XmlPanelFactoryFrame</label>\n")
 			.append("\t</border-panel>\n")
 			.append("</screen>\n")
 			.toString();
 	private static final long serialVersionUID = 1L;
 	private final XmlPrototypeFrame prototypeFrame = new XmlPrototypeFrame();
 
-	private final JPanel mainPanel = new JPanel();
-	private final BoxLayout layout = new BoxLayout(mainPanel, BoxLayout.X_AXIS);
+	private JTextArea xmlWriterArea;
+	private JScrollPane xmlWriterScroll;
 
-	private final JTextArea xmlWriterArea = new JTextArea();
-	private final UndoManager undoManager;
-	private final JScrollPane xmlWriterScroll = new JScrollPane(xmlWriterArea);
-
-	private final JTextPane consoleArea = new JTextPane();
-	private final JScrollPane consoleScroll = new JScrollPane(consoleArea);
-
-	private final JPanel btnPanel = new JPanel();
-	private final FlowLayout btnLayout = new FlowLayout();
-
-	private final JButton executeBtn = new JButton("TEST");
+	private JTextPane consoleArea;
+	private JScrollPane consoleScroll;
 
 	private final PrintStream originalOut;
 	private final PrintStream originalErr;
@@ -80,75 +72,96 @@ public class XmlPanelFactoryFrame extends JFrame {
 	private JMenu panelMenu;	
 	private JMenu compMenu;
 
-	private final Map<String, XmlMenuItemComponent<?>> componentMap = new ConcurrentHashMap<String, XmlMenuItemComponent<?>>();
+	private final Map<String, XmlComponent> mainCompMap = new ConcurrentHashMap<String, XmlComponent>();
+	private final Map<String, XmlMenuItemComponent<?>> menuItemMap = new ConcurrentHashMap<String, XmlMenuItemComponent<?>>();
+	private final Map<String, XmlComponent> dlgCompMap = new ConcurrentHashMap<String, XmlComponent>();
+
+	private JPanel helpPanel;
+	private JTextArea attr;
+	private JTextArea elem;
 
 	public XmlPanelFactoryFrame() {
+		this.originalOut = System.out;
+		this.originalErr = System.err;
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		Dimension frameSize = WindowUtils.getScreenRatioSize(0.7);
 		setSize(frameSize);
 		setLocationRelativeTo(null);
+		setContentPane(frameSize);
+		setHelpPanel();
 		setMenubar();
+	}
+
+	private void setContentPane(Dimension frameSize) {
+		URL url = getClass().getClassLoader().getResource("sn/tools/swing/factory/xml/panel/main-panel.xml");
+		XmlPanel xmlPanel = CreateUtils.createXmlPanelAndPutcomponentMap(url, mainCompMap);
+		setContentPane(xmlPanel.injectTargetPanel());
+		System.out.println(mainCompMap);
+		Uncheck.wrapRunnable(() -> InjectionUtils.injectComponent(this, mainCompMap)).run();
 		Dimension textSize = new Dimension(frameSize.width / 2, frameSize.height);
 		xmlWriterScroll.setPreferredSize(textSize);
 		xmlWriterArea.setText(DEFAULT_VALUE);
-		xmlWriterArea.setFont(xmlWriterArea.getFont().deriveFont(16f));
 		xmlWriterArea.setTabSize(2);
-		undoManager = ComponentUtils.setUndo(xmlWriterArea);
-		SwingUtilities.invokeLater(undoManager::discardAllEdits);
 		consoleScroll.setPreferredSize(textSize);
-		consoleArea.setFont(consoleArea.getFont().deriveFont(16f));
-		consoleArea.setBackground(Color.DARK_GRAY);
 		consoleArea.setEditable(false);
-		mainPanel.setLayout(layout);
-		mainPanel.add(xmlWriterScroll);
-		mainPanel.add(consoleScroll);
-		add(mainPanel, BorderLayout.CENTER);
-		this.originalOut = System.out;
-		this.originalErr = System.err;
 		TextAreaOutputStream outStream = new TextAreaOutputStream(Color.WHITE);
 		TextAreaOutputStream errStream = new TextAreaOutputStream(Color.RED);
 		System.setOut(new PrintStream(outStream, true));
 		System.setErr(new PrintStream(errStream, true));
-		btnPanel.setLayout(btnLayout);
-		btnLayout.setAlignment(FlowLayout.CENTER);
-		btnPanel.add(executeBtn);
-		add(btnPanel, BorderLayout.SOUTH);
-		executeBtn.addActionListener(this::test);
 	}
 
 	private void setMenubar() {
-		URL url = getClass().getClassLoader().getResource("sn/tools/swing/factory/frame/menu/menu.xml");
-		XmlMenuBar xmlMenuBar = CreateUtils.createXmlMenuBar(url, componentMap);
+		URL url = getClass().getClassLoader().getResource("sn/tools/swing/factory/xml/menu/menu.xml");
+		XmlMenuBar xmlMenuBar = CreateUtils.createXmlMenuBar(url, menuItemMap);
 		setJMenuBar(xmlMenuBar.injectTargetMenuBar());
-		Uncheck.wrapRunnable(() -> InjectionUtils.injectMenuItem(this, componentMap)).run();
+		Uncheck.wrapRunnable(() -> InjectionUtils.injectMenuItem(this, menuItemMap)).run();
 		setPanelMenu();
 		setCompMenu();
 	}
 
 	private void setPanelMenu() {
+		List<JMenuItem> list = new ArrayList<JMenuItem>();
 		XmlPanelConfigs.PANEL_CONFIGS.forEach((k, v) -> {
 			JMenuItem item = new JMenuItem(k);
-			panelMenu.add(item);
-			StringBuilder sb = new StringBuilder("-- Attributes --\n");
-			Arrays.stream(v.getMethods()).filter(m -> m.isAnnotationPresent(InjectXmlAttribute.class))
-					.map(m -> m.getAnnotation(InjectXmlAttribute.class))
-					.forEach(att -> sb.append(String.format("%s %s\n", Arrays.toString(att.value()), att.explanation())));
-			item.addActionListener(_ -> JOptionPane.showMessageDialog(this, sb.toString()));
+			list.add(item);
+			item.addActionListener(_ -> showHelpDialog(k, v));
 		});
+		list.sort(Comparator.comparing(JMenuItem::getText));
+		list.forEach(panelMenu::add);
 	}
 
 	private void setCompMenu() {
+		List<JMenuItem> list = new ArrayList<JMenuItem>();
 		XmlComponentConfigs.COMPONENT_CONFIGS.forEach((k, v) -> {
 			JMenuItem item = new JMenuItem(k);
-			compMenu.add(item);
-			StringBuilder sb = new StringBuilder("-- Attributes --\n");
-			Arrays.stream(v.getMethods()).filter(m -> m.isAnnotationPresent(InjectXmlAttribute.class))
-					.map(m -> m.getAnnotation(InjectXmlAttribute.class)).forEach(att -> sb
-							.append(String.format("%s %s\n", Arrays.toString(att.value()), att.explanation())));
-			item.addActionListener(_ -> JOptionPane.showMessageDialog(this, sb.toString()));
+			list.add(item);
+			item.addActionListener(_ -> showHelpDialog(k, v));
 		});
+		list.sort(Comparator.comparing(JMenuItem::getText));
+		list.forEach(compMenu::add);
 	}
 
+	private void showHelpDialog(String k, Class<?> v) {
+		StringBuilder attrSb = new StringBuilder("-- Attributes --\n");
+		Arrays.stream(v.getMethods()).filter(m -> m.isAnnotationPresent(InjectXmlAttribute.class))
+				.map(m -> m.getAnnotation(InjectXmlAttribute.class)).forEach(att -> attrSb
+						.append(String.format("%s %s\n", Arrays.toString(att.value()), att.explanation())));
+		attr.setText(attrSb.toString());
+		StringBuilder elemSb = new StringBuilder("-- Element Tag Regex --\n");
+		Arrays.stream(v.getMethods()).filter(m -> m.isAnnotationPresent(InjectXmlElement.class))
+				.map(m -> m.getAnnotation(InjectXmlElement.class)).forEach(elem -> elemSb
+						.append(String.format("%s %s\n", Arrays.toString(elem.value()), elem.explanation())));
+		elem.setText(elemSb.toString());
+		JOptionPane.showMessageDialog(this, helpPanel, k, JOptionPane.PLAIN_MESSAGE);
+	}
+
+	private void setHelpPanel() {
+		URL url = getClass().getClassLoader().getResource("sn/tools/swing/factory/xml/panel/help-panel.xml");
+		CreateUtils.createXmlPanelAndPutcomponentMap(url, dlgCompMap);
+		Uncheck.wrapRunnable(() -> InjectionUtils.injectComponent(this, dlgCompMap)).run();
+	}
+
+	@InjectAction("test")
 	public void test(ActionEvent event) {
 		prototypeFrame.setPanel(xmlWriterArea.getText());
 		if (!prototypeFrame.isVisible()) {
@@ -207,6 +220,26 @@ public class XmlPanelFactoryFrame extends JFrame {
 		}
 	}
 
+	@InjectComponent("write-area")
+	public void setXmlWriterArea(JTextArea xmlWriterArea) {
+		this.xmlWriterArea = xmlWriterArea;
+	}
+
+	@InjectComponent("write-scroll")
+	public void setXmlWriterScroll(JScrollPane xmlWriterScroll) {
+		this.xmlWriterScroll = xmlWriterScroll;
+	}
+
+	@InjectComponent("console")
+	public void setConsoleArea(JTextPane consoleArea) {
+		this.consoleArea = consoleArea;
+	}
+
+	@InjectComponent("console-scroll")
+	public void setConsoleScroll(JScrollPane consoleScroll) {
+		this.consoleScroll = consoleScroll;
+	}
+
 	@InjectComponent("panel-menu")
 	public void setPanelItem(JMenu panelMenu) {
 		this.panelMenu = panelMenu;
@@ -215,6 +248,21 @@ public class XmlPanelFactoryFrame extends JFrame {
 	@InjectComponent("comp-menu")
 	public void setCompMenu(JMenu compMenu) {
 		this.compMenu = compMenu;
+	}
+
+	@InjectComponent("help-panel")
+	public void setHelpPanel(JPanel panel) {
+		this.helpPanel = panel;
+	}
+
+	@InjectComponent("attr")
+	public void setAttributeHelp(JTextArea textarea) {
+		this.attr = textarea;
+	}
+
+	@InjectComponent("elem")
+	public void setElementHelp(JTextArea textarea) {
+		this.elem = textarea;
 	}
 
 	private class TextAreaOutputStream extends OutputStream {

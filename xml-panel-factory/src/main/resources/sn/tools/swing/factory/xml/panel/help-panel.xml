@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen>
+	<border-panel id="help-panel">
+		<tabs>
+			<tab title="Attribute">
+				<text-area id="attr" editable="false" font-size="13" />
+			</tab>
+			<tab title="Element">
+				<text-area id="elem" editable="false" font-size="13" />
+			</tab>
+		</tabs>
+	</border-panel>
+</screen>

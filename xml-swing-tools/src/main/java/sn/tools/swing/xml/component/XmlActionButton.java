@@ -27,8 +27,7 @@ public class XmlActionButton extends XmlButtonComponent {
 
 	public XmlActionButton() {
 		super();
-		component.registerKeyboardAction(_ -> component.doClick(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+		component.registerKeyboardAction(_ -> component.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
 				JComponent.WHEN_FOCUSED);
 	}
 
@@ -64,6 +63,11 @@ public class XmlActionButton extends XmlButtonComponent {
 			component.removeActionListener(oldAction);
 		}
 		component.addActionListener(newAction);
+	}
+
+	@InjectXmlAttribute("Mnemonic")
+	public void injectMnemonic(String mnemonic) {
+		injectTargetButtonComponent().setMnemonic(mnemonic.charAt(0));
 	}
 
 	@Override

@@ -14,6 +14,11 @@ public abstract class XmlMenuItemComponent<T extends JMenuItem> implements XmlPa
 		injectTargetComponent().setText(label);
 	}
 
+	@InjectXmlAttribute("mnemonic")
+	public void injectMnemonic(String mnemonic) {
+		injectTargetComponent().setMnemonic(mnemonic.charAt(0));
+	}
+
 	@Override
 	public String getId() {
 		return id;
