@@ -4,7 +4,7 @@
 		<center>
 			<hbox-panel>
 				<scroll id="write-scroll">
-					<text-area id="write-area" font-size="14" />
+					<text-area id="write-area" font-size="14" undoable="true" />
 				</scroll>
 				<scroll id="console-scroll">
 					<text-pane id="console" background-color="#303030" font-size="16" />
