@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menu-bar>
 	<menu label="画面選択">
+		<item label="メニュー" id="menu-screen" />
 		<menu label="検索">
 			<item label="init" id="init-screen" />
 			<item label="顧客検索" id="customers_search-screen" />

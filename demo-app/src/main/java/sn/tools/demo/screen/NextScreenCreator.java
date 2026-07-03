@@ -41,4 +41,9 @@ public class NextScreenCreator extends XmlScreenCreator {
 				.invokeLater(() -> parameter.getParam("text", String.class).ifPresent(text -> label.setText(text)));
 	}
 
+	@Override
+	public boolean isDisplayCatalog() {
+		return false;
+	}
+
 }

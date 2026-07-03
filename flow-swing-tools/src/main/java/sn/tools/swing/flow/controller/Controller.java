@@ -19,8 +19,8 @@ import sn.tools.swing.flow.creator.Creator;
 
 public abstract class Controller<T, A extends Annotation> {
 
-	private final Map<String, Creator<T>> creatorMap = new ConcurrentHashMap<>();
-	private final AtomicReference<String> currentId = new AtomicReference<>();
+	protected final Map<String, Creator<T>> creatorMap = new ConcurrentHashMap<>();
+	protected final AtomicReference<String> currentId = new AtomicReference<>();
 
 	public Controller(String packageName, Class<A> annotationClazz) {
 		Uncheck.wrapRunnable(() -> create(packageName, annotationClazz)).run();

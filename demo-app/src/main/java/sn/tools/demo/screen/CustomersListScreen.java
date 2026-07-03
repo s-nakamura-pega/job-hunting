@@ -93,4 +93,9 @@ public class CustomersListScreen extends XmlScreenCreator {
 		System.out.println("panel customers_list.xml onInit");
 	}
 
+	@Override
+	public boolean isDisplayCatalog() {
+		return false;
+	}
+
 }

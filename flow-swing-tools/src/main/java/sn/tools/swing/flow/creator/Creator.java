@@ -3,7 +3,7 @@ package sn.tools.swing.flow.creator;
 import sn.tools.swing.flow.parameter.ScreenParameter;
 
 public interface Creator<T> {
-
+	
 	void create();
 
 	void onEnter(ScreenParameter parameter);

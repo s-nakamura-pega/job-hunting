@@ -1,15 +1,24 @@
 package sn.tools.swing.flow.controller;
 
 import java.lang.annotation.Annotation;
-
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 
+import sn.tools.clazz.creator.SimpleObjectCreator;
 import sn.tools.swing.flow.annotation.Screen;
+import sn.tools.swing.flow.creator.ScreenCreator;
+import sn.tools.swing.flow.frame.FlowScreenFrame;
+import sn.tools.swing.flow.screen.MenuScreen;
 
 public class ScreenController extends Controller<JPanel, Screen> {
 
-	public ScreenController(String packageName) {
+	private MenuScreen menuScreen;
+
+	public ScreenController(String packageName, Class<? extends MenuScreen> menuScreen) {
 		super(packageName, Screen.class);
+		this.menuScreen = new SimpleObjectCreator<>(menuScreen).addConstructorArgument(List.class, getPanelCatalog()).create();
 	}
 
 	@Override
@@ -23,6 +32,23 @@ public class ScreenController extends Controller<JPanel, Screen> {
 			return screen.value();
 		}
 		throw new IllegalArgumentException(annotation.getClass().getName() + ": Screenアノテーションではありません。");
+	}
+
+	public List<ScreenCatalog> getPanelCatalog() {
+		List<ScreenCatalog> catalogList = new ArrayList<ScreenCatalog>();
+		creatorMap.forEach((k, v) -> {
+			if (v instanceof ScreenCreator sc && sc.isDisplayCatalog()) {
+				catalogList.add(new ScreenCatalog(k, sc.getScreenName(), sc.getScreenIcon()));
+			}
+		});
+		return catalogList;
+	}
+
+	public void flowMenuScreen(FlowScreenFrame frame) {
+		frame.flowScreen(menuScreen);
+	}
+
+	public static record ScreenCatalog(String id, String screenName, Icon screenIcon) {
 	}
 
 }

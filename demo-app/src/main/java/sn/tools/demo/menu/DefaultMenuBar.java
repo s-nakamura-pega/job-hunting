@@ -12,6 +12,11 @@ import sn.tools.swing.xml.annotation.InjectAction;
 @MenuBar("init")
 public class DefaultMenuBar extends XmlMenuBarCreator {
 
+	@InjectAction("menu-screen")
+	public void flowMenu(ActionEvent event) {
+		FlowScreenFrame.flowMenu(event);
+	}
+
 	@InjectAction("init-screen")
 	public void flowInit(ActionEvent event) {
 		SimpleScreenParameter sp = new SimpleScreenParameter();

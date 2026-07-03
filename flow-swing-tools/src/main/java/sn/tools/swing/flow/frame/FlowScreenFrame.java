@@ -13,6 +13,7 @@ import sn.tools.swing.flow.controller.MenuBarController;
 import sn.tools.swing.flow.controller.ScreenController;
 import sn.tools.swing.flow.parameter.ScreenParameter;
 import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.flow.screen.MenuScreen;
 import sn.tools.swing.util.WindowUtils;
 
 public abstract class FlowScreenFrame extends JFrame {
@@ -29,7 +30,7 @@ public abstract class FlowScreenFrame extends JFrame {
 		String scanMemuBarPackage = scanMenuBarPackage();
 		menuController = (scanMemuBarPackage == null) ? null : new MenuBarController(scanMenuBarPackage());
 		flowMenuBar(initMenuBarId(), new SimpleScreenParameter());
-		screenController = new ScreenController(scanScreenPackage());
+		screenController = new ScreenController(scanScreenPackage(), getMenuScreenClass());
 		flowScreen(initScreenId(), new SimpleScreenParameter());
 		onInit();
 	}
@@ -58,6 +59,14 @@ public abstract class FlowScreenFrame extends JFrame {
 		});
 	}
 
+	public void flowMenuScreen() {
+		screenController.flowMenuScreen(this);
+	}
+
+	protected Class<? extends MenuScreen> getMenuScreenClass() {
+		return MenuScreen.class;
+	}
+
 	protected abstract String scanMenuBarPackage();
 
 	protected abstract String initMenuBarId();
@@ -81,6 +90,13 @@ public abstract class FlowScreenFrame extends JFrame {
 		if (frame != null) {
 			frame.flowMenuBar(menuBarId, menuBarParam);
 			frame.flowScreen(screenId, screenParam);
+		}
+	}
+
+	public static void flowMenu(ActionEvent event) {
+		FlowScreenFrame frame = WindowUtils.getWindow(event, FlowScreenFrame.class);
+		if (frame != null) {
+			frame.flowMenuScreen();
 		}
 	}
 
