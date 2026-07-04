@@ -23,8 +23,7 @@ import sn.tools.swing.util.definition.KeyModifiers;
 
 public interface ComponentUtils {
 
-	public static BufferedImage panelToImage(JPanel panel) {
-		Dimension size = panel.getPreferredSize();
+	public static BufferedImage panelToImage(JPanel panel, Dimension size) {
 		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = img.createGraphics();
 		panel.setSize(size);

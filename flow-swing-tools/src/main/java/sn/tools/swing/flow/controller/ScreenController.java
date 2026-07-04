@@ -3,7 +3,7 @@ package sn.tools.swing.flow.controller;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import sn.tools.clazz.creator.SimpleObjectCreator;
@@ -48,7 +48,7 @@ public class ScreenController extends Controller<JPanel, Screen> {
 		frame.flowScreen(menuScreen);
 	}
 
-	public static record ScreenCatalog(String id, String screenName, Icon screenIcon) {
+	public static record ScreenCatalog(String id, String screenName, ImageIcon screenIcon) {
 	}
 
 }

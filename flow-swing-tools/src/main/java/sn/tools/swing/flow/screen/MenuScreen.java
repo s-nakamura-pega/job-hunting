@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -32,9 +31,9 @@ public class MenuScreen extends JPanel {
 		JPanel panel = new JPanel();
 		panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		screenCatalogList.forEach(sc -> {
-			Dimension size = WindowUtils.getScreenRatioSize(0.15);
+			Dimension size = WindowUtils.getScreenRatioSize(0.40);
 			JButton btn = new JButton(
-					ComponentUtils.createScaledIcon(((ImageIcon) sc.screenIcon()).getImage(), size.width, size.height));
+					ComponentUtils.createScaledIcon(sc.screenIcon().getImage(), size.width, size.height));
 			btn.setToolTipText(sc.screenName());
 			btn.setPreferredSize(size);
 			btn.addActionListener(e -> {

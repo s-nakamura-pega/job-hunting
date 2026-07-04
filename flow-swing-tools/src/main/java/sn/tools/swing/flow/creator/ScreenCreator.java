@@ -1,12 +1,14 @@
 package sn.tools.swing.flow.creator;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import sn.tools.swing.flow.controller.ScreenController.ScreenCatalog;
 import sn.tools.swing.util.ComponentUtils;
+import sn.tools.swing.util.WindowUtils;
 
 public interface ScreenCreator extends Creator<JPanel> {
 
@@ -14,9 +16,10 @@ public interface ScreenCreator extends Creator<JPanel> {
 		return getClass().getSimpleName();
 	}
 
-	default Icon getScreenIcon() {
+	default ImageIcon getScreenIcon() {
 		JPanel panel = getCreation();
-		BufferedImage img = ComponentUtils.panelToImage(panel);
+		Dimension size = WindowUtils.getScreenRatioSize(0.7);
+		BufferedImage img = ComponentUtils.panelToImage(panel, size);
 		return new ImageIcon(img);
 	}
 
