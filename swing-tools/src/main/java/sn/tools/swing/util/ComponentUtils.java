@@ -28,6 +28,7 @@ public interface ComponentUtils {
 		Graphics2D g2 = img.createGraphics();
 		panel.setSize(size);
 		panel.doLayout();
+		panel.validate();
 		panel.printAll(g2);
 		g2.dispose();
 		return img;

@@ -1,18 +1,12 @@
 package sn.tools.swing.flow.frame;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
@@ -24,22 +18,26 @@ import sn.tools.swing.flow.controller.ScreenController;
 import sn.tools.swing.flow.parameter.ScreenParameter;
 import sn.tools.swing.flow.parameter.SimpleScreenParameter;
 import sn.tools.swing.flow.screen.MenuScreen;
+import sn.tools.swing.flow.screen.TitleScreen;
 import sn.tools.swing.util.WindowUtils;
 
 public abstract class FlowScreenFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final long WAIT_MIN_TIME = 3000;
+
 	private MenuBarController menuController;
 	private ScreenController screenController;
 
 	public FlowScreenFrame() {
 		super();
-		long waitTime = 3000;
 		Date start = new Date();
 		setSize(WindowUtils.getScreenRatioSize(0.7));
 		setLocationRelativeTo(null);
-		Timer titleTimer = setTitle();
+		TitleScreen titleScreen = new TitleScreen();
+		setContentPane(titleScreen);
+		titleScreen.startProcessingTimer();
 		SwingWorker<Void, String> worker = new SwingWorker<>() {
 
 			@Override
@@ -58,12 +56,20 @@ public abstract class FlowScreenFrame extends JFrame {
 			protected void done() {
 				Date end = new Date();
 				long procTime = end.getTime() - start.getTime();
-				Timer timer = new Timer((int) (procTime < waitTime ? waitTime - procTime : 0), _ -> {
+				Timer timer = new Timer((int) (procTime < WAIT_MIN_TIME ? WAIT_MIN_TIME - procTime : 0), _ -> {
 					try {
-						titleTimer.stop();
+						titleScreen.stopProcessingTimer();
 						get();
-						flowMenuBar(initMenuBarId(), new SimpleScreenParameter());
-						flowScreen(initScreenId(), new SimpleScreenParameter());
+						String menuId = initMenuBarId();
+						if (menuId != null && !menuId.isBlank()) {
+							flowMenuBar(menuId, new SimpleScreenParameter());
+						}
+						String screenId = initScreenId();
+						if (screenId != null && !screenId.isBlank()) {
+							flowScreen(screenId, new SimpleScreenParameter());
+						} else {
+							flowMenuScreen();
+						}
 						onInit();
 					} catch (Exception ex) {
 						throw new RuntimeException(ex);
@@ -75,32 +81,6 @@ public abstract class FlowScreenFrame extends JFrame {
 
 		};
 		worker.execute();
-	}
-
-	private Timer setTitle() {
-		JLabel label = new JLabel("Swing Framework");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setVerticalAlignment(SwingConstants.CENTER);
-		label.setFont(new Font("SansSerif", Font.PLAIN, 40));
-		label.setForeground(Color.WHITE);
-		label.setBackground(Color.DARK_GRAY);
-		label.setOpaque(true);
-		getContentPane().add(label);
-		JLabel proc = new JLabel(" Loading.");
-		proc.setFont(new Font("SansSerif", Font.PLAIN, 20));
-		proc.setForeground(Color.WHITE);
-		proc.setBackground(Color.DARK_GRAY);
-		proc.setOpaque(true);
-		proc.setHorizontalAlignment(SwingConstants.LEFT);
-		getContentPane().add(proc, BorderLayout.SOUTH);
-		AtomicInteger index = new AtomicInteger(0);
-		String[] dots = { ".", "..", "...", "...." };
-		Timer timer = new Timer(500, _ -> {
-			int i = index.getAndUpdate(v -> (v + 1) % dots.length);
-			proc.setText(" Loading" + dots[i]);
-		});
-		timer.start();
-		return timer;
 	}
 
 	public void flowMenuBar(String screenId, ScreenParameter parameter) {

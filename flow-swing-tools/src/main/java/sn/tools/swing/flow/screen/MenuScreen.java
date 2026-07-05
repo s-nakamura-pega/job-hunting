@@ -29,7 +29,7 @@ public class MenuScreen extends JPanel {
 	protected void create() {
 		setLayout(new BorderLayout());
 		JPanel panel = new JPanel();
-		panel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 		screenCatalogList.forEach(sc -> {
 			Dimension size = WindowUtils.getScreenRatioSize(0.40);
 			JButton btn = new JButton(

@@ -3,6 +3,7 @@ package sn.tools.swing.xml.factory.frame;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.Style;
 
 import javax.swing.JFileChooser;
@@ -34,7 +36,12 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import sn.tools.function.uncheck.Uncheck;
+import sn.tools.swing.component.text.AutoCompleteAction;
+import sn.tools.swing.component.text.AutoIndentFilter;
+import sn.tools.swing.util.KeyUtils;
 import sn.tools.swing.util.WindowUtils;
+import sn.tools.swing.util.definition.FocusTargetCondition;
+import sn.tools.swing.util.definition.KeyModifiers;
 import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
 import sn.tools.swing.xml.component.XmlComponent;
@@ -47,6 +54,7 @@ import sn.tools.swing.xml.panel.XmlPanel;
 import sn.tools.swing.xml.panel.XmlPanelConfigs;
 import sn.tools.xml.bind.annotation.InjectXmlAttribute;
 import sn.tools.xml.bind.annotation.InjectXmlElement;
+import sn.tools.xml.util.XmlFormatUtils;
 
 public class XmlPanelFactoryFrame extends JFrame {
 
@@ -102,6 +110,30 @@ public class XmlPanelFactoryFrame extends JFrame {
 		xmlWriterScroll.setPreferredSize(textSize);
 		xmlWriterArea.setText(DEFAULT_VALUE);
 		xmlWriterArea.setTabSize(2);
+		AbstractDocument doc = (AbstractDocument) xmlWriterArea.getDocument();
+		doc.setDocumentFilter(new AutoIndentFilter());
+		// 自動補完候補（タグ名）
+		List<String> tags = new ArrayList<>();
+		XmlPanelConfigs.PANEL_CONFIGS.keySet().forEach(k -> tags.add("<" + k));
+		XmlComponentConfigs.COMPONENT_CONFIGS.keySet().forEach(k -> tags.add("<" + k));
+		// ★ Ctrl+Space を KeyUtils で登録
+		KeyUtils.setKeyAndAction(
+		        xmlWriterArea,
+		        "xml-auto-complete",
+		        new AutoCompleteAction(xmlWriterArea, tags),
+		        FocusTargetCondition.COMPONENT,
+		        KeyEvent.VK_SPACE,
+		        KeyModifiers.CTRL
+		);
+		KeyUtils.setKeyAndAction(
+		        xmlWriterArea,
+		        "xml-format",
+		        this::format,
+		        FocusTargetCondition.COMPONENT,
+		        KeyEvent.VK_F,
+		        KeyModifiers.CTRL,
+		        KeyModifiers.SHIFT
+		);
 		consoleScroll.setPreferredSize(textSize);
 		consoleArea.setEditable(false);
 		TextAreaOutputStream outStream = new TextAreaOutputStream(Color.WHITE);
@@ -198,6 +230,11 @@ public class XmlPanelFactoryFrame extends JFrame {
 				System.err.println("Save failed: " + e.getMessage());
 			}
 		}
+	}
+
+	public void format(ActionEvent event) {
+		String formatted = XmlFormatUtils.format(xmlWriterArea.getText());
+		xmlWriterArea.setText(formatted);
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import sn.tools.swing.flow.controller.ScreenController.ScreenCatalog;
 import sn.tools.swing.util.ComponentUtils;
 import sn.tools.swing.util.WindowUtils;
 
