@@ -1,5 +1,7 @@
 package sn.tools.swing.util;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -27,11 +29,19 @@ public interface ComponentUtils {
 		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = img.createGraphics();
 		panel.setSize(size);
-		panel.doLayout();
-		panel.validate();
+		recursiveDoLayout(panel);
 		panel.printAll(g2);
 		g2.dispose();
 		return img;
+	}
+
+	public static void recursiveDoLayout(Container container) {
+		container.doLayout();
+		for (Component comp : container.getComponents()) {
+			if (comp instanceof Container) {
+				recursiveDoLayout((Container) comp);
+			}
+		}
 	}
 
 	public static Icon createScaledIcon(Image img, int w, int h) {
