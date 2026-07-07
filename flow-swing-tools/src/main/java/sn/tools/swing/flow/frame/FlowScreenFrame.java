@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
+import sn.tools.clazz.exception.ExceptionUtils;
 import sn.tools.swing.flow.context.MenuBarContext;
 import sn.tools.swing.flow.context.ScreenContext;
 import sn.tools.swing.flow.controller.MenuBarController;
@@ -72,7 +74,11 @@ public abstract class FlowScreenFrame extends JFrame {
 						}
 						onInit();
 					} catch (Exception ex) {
-						throw new RuntimeException(ex);
+						ex.printStackTrace();
+						Exception root = ExceptionUtils.getRootCause(ex);
+						JOptionPane.showMessageDialog(FlowScreenFrame.this, root.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+						FlowScreenFrame.this.dispose();
 					}
 				});
 				timer.setRepeats(false);

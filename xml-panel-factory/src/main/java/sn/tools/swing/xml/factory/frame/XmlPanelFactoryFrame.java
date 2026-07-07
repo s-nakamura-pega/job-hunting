@@ -83,6 +83,7 @@ public class XmlPanelFactoryFrame extends JFrame {
 	private final Map<String, XmlComponent> mainCompMap = new ConcurrentHashMap<String, XmlComponent>();
 	private final Map<String, XmlMenuItemComponent<?>> menuItemMap = new ConcurrentHashMap<String, XmlMenuItemComponent<?>>();
 	private final Map<String, XmlComponent> dlgCompMap = new ConcurrentHashMap<String, XmlComponent>();
+	private final List<String> tags = new ArrayList<>();
 
 	private JPanel helpPanel;
 	private JTextArea attr;
@@ -95,9 +96,15 @@ public class XmlPanelFactoryFrame extends JFrame {
 		Dimension frameSize = WindowUtils.getScreenRatioSize(0.7);
 		setSize(frameSize);
 		setLocationRelativeTo(null);
+		setTagList();
 		setContentPane(frameSize);
 		setHelpPanel();
 		setMenubar();
+	}
+
+	private void setTagList() {
+		XmlPanelConfigs.PANEL_CONFIGS.keySet().forEach(k -> tags.add("<" + k));
+		XmlComponentConfigs.COMPONENT_CONFIGS.keySet().forEach(k -> tags.add("<" + k));
 	}
 
 	private void setContentPane(Dimension frameSize) {
@@ -112,11 +119,6 @@ public class XmlPanelFactoryFrame extends JFrame {
 		xmlWriterArea.setTabSize(2);
 		AbstractDocument doc = (AbstractDocument) xmlWriterArea.getDocument();
 		doc.setDocumentFilter(new AutoIndentFilter());
-		// 自動補完候補（タグ名）
-		List<String> tags = new ArrayList<>();
-		XmlPanelConfigs.PANEL_CONFIGS.keySet().forEach(k -> tags.add("<" + k));
-		XmlComponentConfigs.COMPONENT_CONFIGS.keySet().forEach(k -> tags.add("<" + k));
-		// ★ Ctrl+Space を KeyUtils で登録
 		KeyUtils.setKeyAndAction(
 		        xmlWriterArea,
 		        "xml-auto-complete",
@@ -235,6 +237,10 @@ public class XmlPanelFactoryFrame extends JFrame {
 	public void format(ActionEvent event) {
 		String formatted = XmlFormatUtils.format(xmlWriterArea.getText());
 		xmlWriterArea.setText(formatted);
+	}
+
+	public void autoComplete(ActionEvent event) {
+		new AutoCompleteAction(xmlWriterArea, tags).actionPerformed(event);
 	}
 
 	@Override

@@ -4,6 +4,10 @@
 		<item label="Load" action="loadFile" mnemonic="l" />
 		<item label="Save" action="saveFile" mnemonic="s" />
 	</menu>
+	<menu label="Edit" mnemonic="e">
+		<item label="Format" action="format" mnemonic="f" />
+		<item label="Auto Complete" action="autoComplete" mnemonic="c" />
+	</menu>
 	<menu label="Help" mnemonic="h">
 		<menu label="Panel" id="panel-menu" mnemonic="p"/>
 		<menu label="Component" id="comp-menu" mnemonic="c"/>
