@@ -111,7 +111,6 @@ public class XmlPanelFactoryFrame extends JFrame {
 		URL url = getClass().getClassLoader().getResource("sn/tools/swing/factory/xml/panel/main-panel.xml");
 		XmlPanel xmlPanel = CreateUtils.createXmlPanelAndPutcomponentMap(url, mainCompMap);
 		setContentPane(xmlPanel.injectTargetPanel());
-		System.out.println(mainCompMap);
 		Uncheck.wrapRunnable(() -> InjectionUtils.injectComponent(this, mainCompMap)).run();
 		Dimension textSize = new Dimension(frameSize.width / 2, frameSize.height);
 		xmlWriterScroll.setPreferredSize(textSize);
@@ -338,10 +337,6 @@ public class XmlPanelFactoryFrame extends JFrame {
 			});
 		}
 
-	}
-
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> new XmlPanelFactoryFrame().setVisible(true));
 	}
 
 }
