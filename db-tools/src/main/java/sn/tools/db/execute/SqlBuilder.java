@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public sealed abstract class SqlBuilder<T extends SqlBuilder<?>> permits QueryExecutor, UpdateExecutor, Where {
+public sealed abstract class SqlBuilder<T extends SqlBuilder<?>>
+		permits QueryExecutor, UpdateExecutor, Where, Select, From, InnerJoin, LeftOuterJoin, On, OrderBy, GroupBy,
+		RightOuterJoin, FullOuterJoin, Having, Update, Insert, Delete, Merge {
 
 	protected final StringBuilder sql = new StringBuilder();
 	protected final List<Object> bindList = new ArrayList<>();
