@@ -3,7 +3,6 @@ package sn.tools.swing.game.component;
 import java.awt.Graphics;
 import javax.swing.JComponent;
 import javax.swing.Timer;
-import javax.swing.SwingUtilities;
 
 public abstract class AbstractCanvas extends JComponent {
 
@@ -14,14 +13,6 @@ public abstract class AbstractCanvas extends JComponent {
 
 	public void setFps(int fps) {
 		this.fps = fps;
-
-		// ★ Timer の生成は必ず EDT で行う
-		SwingUtilities.invokeLater(() -> {
-			loopTimer = new Timer(1000 / fps, _ -> {
-				update();
-				repaint();
-			});
-		});
 	}
 
 	public int getFps() {
@@ -29,16 +20,15 @@ public abstract class AbstractCanvas extends JComponent {
 	}
 
 	public void startLoop() {
-		// ★ Timer がまだ生成されていない可能性があるので EDT で保証
-		SwingUtilities.invokeLater(() -> {
-			if (loopTimer == null) {
-				loopTimer = new Timer(1000 / fps, _ -> {
-					update();
-					repaint();
-				});
-			}
+		if (loopTimer == null) {
+			loopTimer = new Timer(1000 / fps, _ -> {
+				update();
+				repaint();
+			});
 			loopTimer.start();
-		});
+		} else {
+			loopTimer.restart();
+		}
 	}
 
 	public void stopLoop() {
