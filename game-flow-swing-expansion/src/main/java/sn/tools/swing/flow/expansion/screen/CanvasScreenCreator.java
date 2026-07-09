@@ -8,7 +8,7 @@ import sn.tools.swing.flow.creator.ScreenCreator;
 import sn.tools.swing.flow.parameter.ScreenParameter;
 import sn.tools.swing.game.component.AbstractCanvas;
 
-public abstract class GameScreenCreator<T extends AbstractCanvas> implements ScreenCreator {
+public abstract class CanvasScreenCreator<T extends AbstractCanvas> implements ScreenCreator {
 
 	private JPanel panel;
 
@@ -23,11 +23,11 @@ public abstract class GameScreenCreator<T extends AbstractCanvas> implements Scr
 
 	@Override
 	public void onEnter(ScreenParameter parameter) {
-		canvas().startLoop();
 	}
 
 	@Override
 	public void onDisplay(ScreenParameter parameter) {
+		canvas().startLoop();
 	}
 
 	@Override

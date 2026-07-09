@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import sn.tools.clazz.creator.SimpleObjectCreator;
 import sn.tools.swing.flow.annotation.Screen;
@@ -46,6 +47,10 @@ public class ScreenController extends Controller<JPanel, Screen> {
 
 	public void flowMenuScreen(FlowScreenFrame frame) {
 		frame.flowScreen(menuScreen);
+		String oldId = currentId.get();
+		if (oldId != null) {
+			SwingUtilities.invokeLater(() -> creatorMap.get(oldId).onExit());
+		}
 	}
 
 	public static record ScreenCatalog(String id, String screenName, ImageIcon screenIcon) {
