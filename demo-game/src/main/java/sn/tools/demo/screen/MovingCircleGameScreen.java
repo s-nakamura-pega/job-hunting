@@ -3,6 +3,10 @@ package sn.tools.demo.screen;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import sn.tools.swing.flow.annotation.Screen;
 import sn.tools.swing.flow.expansion.screen.CanvasScreenCreator;
@@ -14,6 +18,10 @@ import sn.tools.swing.game.object.GameObject;
 public class MovingCircleGameScreen extends CanvasScreenCreator<GameObjectCanvas> {
 
 	private GameObjectCanvas canvas = new GameObjectCanvas();
+
+	private ScheduledExecutorService loopExecutor;
+
+	private final AtomicInteger count = new AtomicInteger(0);
 
 	@Override
 	protected int fps() {
@@ -28,9 +36,15 @@ public class MovingCircleGameScreen extends CanvasScreenCreator<GameObjectCanvas
 	@Override
 	protected void OnInit() {
 		canvas.setBackground(new ColorBackground(new Color(30, 30, 60)));
-		MovingCircle circle = new MovingCircle();
-		circle.setCanvasWidth(800);
-		canvas.addObject(circle);
+		loopExecutor = Executors.newSingleThreadScheduledExecutor();
+		loopExecutor.scheduleAtFixedRate(() -> {
+			if (canvas.isShowing() && count.get() < 5) {
+				MovingCircle circle = new MovingCircle();
+				circle.setCanvasWidth(800);
+				canvas.addObject(circle);
+				count.set(count.get() + 1);
+			}
+		}, 0, 5, TimeUnit.SECONDS);
 	}
 
 	public class MovingCircle implements GameObject {

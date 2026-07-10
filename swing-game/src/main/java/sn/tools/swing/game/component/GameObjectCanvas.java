@@ -37,7 +37,8 @@ public class GameObjectCanvas extends AbstractCanvas {
 	public void clear() {
 
 		// オブジェクト破棄
-		for (GameObject obj : objects) {
+		List<GameObject> snapshot = new ArrayList<>(objects);
+		for (GameObject obj : snapshot) {
 			obj.destroy();
 			obj.onRemove();
 		}
@@ -60,7 +61,8 @@ public class GameObjectCanvas extends AbstractCanvas {
 		}
 
 		// オブジェクト更新
-		for (GameObject obj : objects) {
+		List<GameObject> snapshot = new ArrayList<>(objects);
+		for (GameObject obj : snapshot) {
 			obj.update();
 		}
 
@@ -68,7 +70,7 @@ public class GameObjectCanvas extends AbstractCanvas {
 		checkCollisions();
 
 		// 衝突後処理
-		for (GameObject obj : objects) {
+		for (GameObject obj : snapshot) {
 			obj.postUpdate();
 		}
 
@@ -85,21 +87,22 @@ public class GameObjectCanvas extends AbstractCanvas {
 		}
 
 		// オブジェクト描画
-		for (GameObject obj : objects) {
+		List<GameObject> snapshot = new ArrayList<>(objects);
+		for (GameObject obj : snapshot) {
 			obj.draw(g);
 		}
 	}
 
 	/** 衝突判定 */
 	private void checkCollisions() {
-		int size = objects.size();
-
+		List<GameObject> snapshot = new ArrayList<>(objects);
+		int size = snapshot.size();
 		for (int i = 0; i < size; i++) {
-			GameObject a = objects.get(i);
+			GameObject a = snapshot.get(i);
 			Rectangle ra = a.getBounds();
 
 			for (int j = i + 1; j < size; j++) {
-				GameObject b = objects.get(j);
+				GameObject b = snapshot.get(j);
 				Rectangle rb = b.getBounds();
 
 				if (ra.intersects(rb)) {
