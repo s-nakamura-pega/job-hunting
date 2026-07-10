@@ -7,7 +7,7 @@ public class MainFrame extends FlowScreenFrame {
 	private static final long serialVersionUID = 1L;
 
 	public MainFrame() {
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
 	@Override

@@ -47,7 +47,7 @@ public class ScreenController extends Controller<JPanel, Screen> {
 
 	public void flowMenuScreen(FlowScreenFrame frame) {
 		frame.flowScreen(menuScreen);
-		String oldId = currentId.get();
+		String oldId = currentId.getAndSet(null);
 		if (oldId != null) {
 			SwingUtilities.invokeLater(() -> creatorMap.get(oldId).onExit());
 		}

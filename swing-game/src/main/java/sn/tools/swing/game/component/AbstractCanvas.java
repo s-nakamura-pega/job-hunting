@@ -1,15 +1,20 @@
 package sn.tools.swing.game.component;
 
 import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JComponent;
-import javax.swing.Timer;
 
 public abstract class AbstractCanvas extends JComponent {
 
 	private static final long serialVersionUID = 1L;
 
 	private int fps = 60;
-	private Timer loopTimer;
+
+	private ScheduledExecutorService loopExecutor;
 
 	public void setFps(int fps) {
 		this.fps = fps;
@@ -20,20 +25,23 @@ public abstract class AbstractCanvas extends JComponent {
 	}
 
 	public void startLoop() {
-		if (loopTimer == null) {
-			loopTimer = new Timer(1000 / fps, _ -> {
-				update();
-				repaint();
-			});
-			loopTimer.start();
-		} else {
-			loopTimer.restart();
+		if (loopExecutor != null && !loopExecutor.isShutdown()) {
+			return;
 		}
+		System.out.println("Loop Start");
+		loopExecutor = Executors.newSingleThreadScheduledExecutor();
+		long frameIntervalNs = 1_000_000_000L / fps;
+		loopExecutor.scheduleAtFixedRate(() -> {
+			update();
+			repaint();
+		}, 0, frameIntervalNs, TimeUnit.NANOSECONDS);
 	}
 
 	public void stopLoop() {
-		if (loopTimer != null) {
-			loopTimer.stop();
+		if (loopExecutor != null) {
+			loopExecutor.shutdownNow();
+			loopExecutor = null;
+			System.out.println("Loop End");
 		}
 	}
 
@@ -41,6 +49,7 @@ public abstract class AbstractCanvas extends JComponent {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		draw(g);
+		Toolkit.getDefaultToolkit().sync();
 	}
 
 	protected abstract void update();
