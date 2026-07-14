@@ -15,5 +15,7 @@ public class Customers {
 	public String address;
 	@DBColumn("phone")
 	public String phone;
+	@DBColumn("created_at")
+	public String createdAt;
 
 }

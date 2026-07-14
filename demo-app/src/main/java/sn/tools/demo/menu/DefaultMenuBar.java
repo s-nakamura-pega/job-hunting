@@ -35,6 +35,12 @@ public class DefaultMenuBar extends XmlMenuBarCreator {
 		FlowScreenFrame.flow(event, "customers_search", sp);
 	}
 
+	@InjectAction("customer_registration-screen")
+	public void flowCustomerRegistrationScreen(ActionEvent event) {
+		SimpleScreenParameter sp = new SimpleScreenParameter();
+		FlowScreenFrame.flow(event, "customer_registration", sp);
+	}
+
 	@Override
 	protected URL xmlURL() {
 		return getClass().getClassLoader().getResource("sn/tools/demo/xml/menu/init.xml");

@@ -6,5 +6,8 @@
 			<item label="init" id="init-screen" />
 			<item label="顧客検索" id="customers_search-screen" />
 		</menu>
+		<menu label="登録">
+			<item label="顧客登録" id="customer_registration-screen" />
+		</menu>
 	</menu>
 </menu-bar>

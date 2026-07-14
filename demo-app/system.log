@@ -1,0 +1,16 @@
+-- customers
+[{address=東京都品川区1-2-3, phone=03-1111-2222, name=株式会社サンプル, created_at=2026-07-14 13:27:26, id=1}, {address=東京都大田区4-5-6, phone=03-3333-4444, name=テスト商事株式会社, created_at=2026-07-14 13:27:26, id=2}, {address=東京都港区7-8-9, phone=03-5555-6666, name=デモ販売株式会社, created_at=2026-07-14 13:27:26, id=3}]
+
+-- orders
+[{order_date=2026-07-14, total_amount=15000.0, id=1, customer_id=1, status=受付}, {order_date=2026-07-14, total_amount=32000.0, id=2, customer_id=2, status=出荷済}, {order_date=2026-07-14, total_amount=8000.0, id=3, customer_id=1, status=受付}]
+
+-- order_items
+[{quantity=1, price=15000.0, id=1, order_id=1, product_name=ノートPC}, {quantity=2, price=12000.0, id=2, order_id=2, product_name=モニター}, {quantity=1, price=8000.0, id=3, order_id=2, product_name=HDMIケーブル}, {quantity=2, price=4000.0, id=4, order_id=3, product_name=マウス}]
+
+menu init.xml onInit
+panel customers_list.xml onInit
+panel customers_search.xml onInit
+panel init.xml onInit
+panel next.xml onInit
+panel customer_registration.xml onInit
+fram.onInit

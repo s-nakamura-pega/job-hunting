@@ -52,11 +52,8 @@ public class CustomersListScreen extends XmlScreenCreator {
 						tel.map(v -> "%" + v + "%").orElse(null));
 
 		QueryExecutor sql = DBManager.getQueryExecutor();
-		sql.append("SELECT * FROM customers").append(where).append("ORDER BY id ASC")
-				.addCreator(new SimpleObjectCreator<>(Customers.class));
-		System.out.println(sql.watchParameters());
-
-		List<DBResponse> responseList = sql.execute();
+		List<DBResponse> responseList = sql.append("SELECT * FROM customers").append(where).append("ORDER BY id ASC")
+				.addCreator(new SimpleObjectCreator<>(Customers.class)).execute();
 
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.setRowCount(0);
