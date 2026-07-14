@@ -1,14 +1,13 @@
 package sn.tools.swing.game.component;
 
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 import sn.tools.swing.game.background.Background;
 import sn.tools.swing.game.object.GameObject;
 
-public class GameObjectCanvas extends AbstractCanvas {
+public class GameCanvas extends AbstractCanvas {
 
 	private static final long serialVersionUID = 1L;
 
@@ -66,7 +65,7 @@ public class GameObjectCanvas extends AbstractCanvas {
 			obj.update();
 		}
 
-		// 衝突判定
+		// 衝突判定（getBounds を廃止 → intersects に一本化）
 		checkCollisions();
 
 		// 衝突後処理
@@ -86,26 +85,24 @@ public class GameObjectCanvas extends AbstractCanvas {
 			background.draw(g, getWidth(), getHeight());
 		}
 
-		// オブジェクト描画
+		// オブジェクト描画（2D/3D 両対応）
 		List<GameObject> snapshot = new ArrayList<>(objects);
 		for (GameObject obj : snapshot) {
-			obj.draw(g);
+			obj.draw(g); // 3D オブジェクトはここで JNI を呼ぶ
 		}
 	}
 
-	/** 衝突判定 */
+	/** 衝突判定（intersects に一本化） */
 	private void checkCollisions() {
 		List<GameObject> snapshot = new ArrayList<>(objects);
 		int size = snapshot.size();
 		for (int i = 0; i < size; i++) {
 			GameObject a = snapshot.get(i);
-			Rectangle ra = a.getBounds();
 
 			for (int j = i + 1; j < size; j++) {
 				GameObject b = snapshot.get(j);
-				Rectangle rb = b.getBounds();
 
-				if (ra.intersects(rb)) {
+				if (a.intersects(b)) {
 					a.onCollision(b);
 					b.onCollision(a);
 				}

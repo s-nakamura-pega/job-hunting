@@ -6,22 +6,23 @@ import java.awt.Rectangle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.swing.SwingUtilities;
 
 import sn.tools.swing.flow.annotation.Screen;
 import sn.tools.swing.flow.expansion.screen.CanvasScreenCreator;
+import sn.tools.swing.flow.parameter.ScreenParameter;
 import sn.tools.swing.game.background.ColorBackground;
-import sn.tools.swing.game.component.GameObjectCanvas;
+import sn.tools.swing.game.component.GameCanvas;
 import sn.tools.swing.game.object.GameObject;
+import sn.tools.swing.game.object.GameObject2D;
 
 @Screen("moving-Circle")
-public class MovingCircleGameScreen extends CanvasScreenCreator<GameObjectCanvas> {
+public class MovingCircleGameScreen extends CanvasScreenCreator<GameCanvas> {
 
-	private GameObjectCanvas canvas = new GameObjectCanvas();
+	private GameCanvas canvas = new GameCanvas();
 
 	private ScheduledExecutorService loopExecutor;
-
-	private final AtomicInteger count = new AtomicInteger(0);
 
 	@Override
 	protected int fps() {
@@ -29,38 +30,41 @@ public class MovingCircleGameScreen extends CanvasScreenCreator<GameObjectCanvas
 	}
 
 	@Override
-	protected GameObjectCanvas canvas() {
+	protected GameCanvas canvas() {
 		return canvas;
 	}
 
 	@Override
 	protected void OnInit() {
 		canvas.setBackground(new ColorBackground(new Color(30, 30, 60)));
-		loopExecutor = Executors.newSingleThreadScheduledExecutor();
-		loopExecutor.scheduleAtFixedRate(() -> {
-			if (canvas.isShowing() && count.get() < 5) {
-				MovingCircle circle = new MovingCircle();
-				circle.setCanvasWidth(800);
-				canvas.addObject(circle);
-				count.set(count.get() + 1);
-			}
-		}, 0, 5, TimeUnit.SECONDS);
+
 	}
 
-	public class MovingCircle implements GameObject {
+	@Override
+	public void onDisplay(ScreenParameter parameter) {
+		super.onDisplay(parameter);
+		loopExecutor = Executors.newSingleThreadScheduledExecutor();
+		loopExecutor.scheduleAtFixedRate(() -> {
+			if (canvas.isShowing()) {
+				MovingCircle circle = new MovingCircle();
+				canvas.addObject(circle);
+			}
+		}, 0, 1, TimeUnit.SECONDS);
+	}
+
+	@Override
+	public void onExit() {
+		super.onExit();
+		loopExecutor.shutdownNow();
+		loopExecutor = null;
+	}
+
+	public class MovingCircle extends GameObject2D {
 
 		private int x = 50;
 		private int y = 300;
 		private int vx = 4;
 		private final int r = 40;
-
-		private int canvasWidth = 800;
-
-		private boolean destroyed = false;
-
-		public void setCanvasWidth(int width) {
-			this.canvasWidth = width;
-		}
 
 		@Override
 		public void init() {
@@ -72,7 +76,7 @@ public class MovingCircleGameScreen extends CanvasScreenCreator<GameObjectCanvas
 			x += vx;
 
 			// 左右反転
-			if (x - r < 0 || x + r > canvasWidth) {
+			if (x - r < 0 || x + r > SwingUtilities.getWindowAncestor(canvas).getWidth()) {
 				vx = -vx;
 			}
 		}
@@ -84,21 +88,13 @@ public class MovingCircleGameScreen extends CanvasScreenCreator<GameObjectCanvas
 
 		@Override
 		public void onCollision(GameObject other) {
-			// 今は何もしない（必要なら実装）
+			destroy();
+			other.destroy();
 		}
 
 		@Override
 		public void onRemove() {
 			// 破棄直前の処理（ログやエフェクトなど）
-		}
-
-		@Override
-		public boolean isDestroyed() {
-			return destroyed;
-		}
-
-		@Override
-		public void destroy() {
 		}
 
 		@Override
@@ -108,7 +104,7 @@ public class MovingCircleGameScreen extends CanvasScreenCreator<GameObjectCanvas
 		}
 
 		@Override
-		public Rectangle getBounds() {
+		protected Rectangle getRect() {
 			return new Rectangle(x - r, y - r, r * 2, r * 2);
 		}
 

@@ -1,7 +1,6 @@
 package sn.tools.swing.game.object;
 
 import java.awt.Graphics;
-import java.awt.Rectangle;
 
 public interface GameObject {
 
@@ -21,6 +20,6 @@ public interface GameObject {
 
 	void draw(Graphics g);
 
-	public Rectangle getBounds();
+	boolean intersects(GameObject other);
 
 }
