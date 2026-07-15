@@ -32,7 +32,11 @@ public class SceneController extends Controller<AbstractCanvas, Scene> {
 
 	public void stop() {
 		Creator<AbstractCanvas> creator = creatorMap.get(currentId.get());
-		creator.getCreation().startLoop();
+		creator.getCreation().stopLoop();
+	}
+
+	public AbstractCanvas getCurrentCanvas() {
+		return creatorMap.get(currentId.get()).getCreation();
 	}
 
 }

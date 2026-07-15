@@ -60,16 +60,28 @@ public abstract class GamePanel extends JPanel {
 	}
 
 	public void flowScene(AbstractCanvas next) {
-		super.add(next);
+		AbstractCanvas current = controller.getCurrentCanvas();
+		if (current != null) {
+			super.remove(current);
+		}
+		super.add(next, BorderLayout.CENTER);
+		revalidate();
+		repaint();
 	}
 
 	@Override
 	public Component add(Component comp) {
-		return comp;
+		throw new UnsupportedOperationException("GamePanel は add を直接使えません。flowScene を使ってください。");
+	}
+
+	@Override
+	public void remove(Component comp) {
+		throw new UnsupportedOperationException("GamePanel は remove を直接使えません。Scene 切り替えは flowScene が管理します。");
 	}
 
 	@Override
 	public void setLayout(LayoutManager mgr) {
+		throw new UnsupportedOperationException("GamePanel は setLayout を直接使えません。Layout は flowScene が管理します。");
 	}
 
 	public void startGame() {
