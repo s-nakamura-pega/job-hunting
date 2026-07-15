@@ -2,21 +2,21 @@ package sn.tools.swing.flow.context;
 
 import javax.swing.JMenuBar;
 import sn.tools.swing.flow.frame.FlowScreenFrame;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
 
 public class MenuBarContext implements ApplicationContext<JMenuBar> {
 
 	private final FlowScreenFrame frame;
 
-	private final ScreenParameter parameter;
+	private final Parameter parameter;
 
-	public MenuBarContext(FlowScreenFrame frame, ScreenParameter parameter) {
+	public MenuBarContext(FlowScreenFrame frame, Parameter parameter) {
 		this.frame = frame;
 		this.parameter = parameter;
 	}
 
 	@Override
-	public ScreenParameter parameter() {
+	public Parameter parameter() {
 		return parameter;
 	}
 

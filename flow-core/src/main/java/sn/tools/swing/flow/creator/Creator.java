@@ -1,14 +1,14 @@
 package sn.tools.swing.flow.creator;
 
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
 
 public interface Creator<T> {
 	
 	void create();
 
-	void onEnter(ScreenParameter parameter);
+	void onEnter(Parameter parameter);
 	
-	void onDisplay(ScreenParameter parameter);
+	void onDisplay(Parameter parameter);
 
 	void onExit();
 

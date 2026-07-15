@@ -17,8 +17,8 @@ import sn.tools.swing.flow.context.MenuBarContext;
 import sn.tools.swing.flow.context.ScreenContext;
 import sn.tools.swing.flow.controller.MenuBarController;
 import sn.tools.swing.flow.controller.ScreenController;
-import sn.tools.swing.flow.parameter.ScreenParameter;
-import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
+import sn.tools.swing.flow.parameter.SimpleParameter;
 import sn.tools.swing.flow.screen.MenuScreen;
 import sn.tools.swing.flow.screen.TitleScreen;
 import sn.tools.swing.util.WindowUtils;
@@ -64,11 +64,11 @@ public abstract class FlowScreenFrame extends JFrame {
 						get();
 						String menuId = initMenuBarId();
 						if (menuId != null && !menuId.isBlank()) {
-							flowMenuBar(menuId, new SimpleScreenParameter());
+							flowMenuBar(menuId, new SimpleParameter());
 						}
 						String screenId = initScreenId();
 						if (screenId != null && !screenId.isBlank()) {
-							flowScreen(screenId, new SimpleScreenParameter());
+							flowScreen(screenId, new SimpleParameter());
 						} else {
 							flowMenuScreen();
 						}
@@ -89,7 +89,7 @@ public abstract class FlowScreenFrame extends JFrame {
 		worker.execute();
 	}
 
-	public void flowMenuBar(String screenId, ScreenParameter parameter) {
+	public void flowMenuBar(String screenId, Parameter parameter) {
 		if (menuController == null) {
 			return;
 		}
@@ -104,7 +104,7 @@ public abstract class FlowScreenFrame extends JFrame {
 		});
 	}
 
-	public void flowScreen(String screenId, ScreenParameter parameter) {
+	public void flowScreen(String screenId, Parameter parameter) {
 		screenController.flow(screenId, new ScreenContext(this, parameter));
 	}
 
@@ -134,15 +134,15 @@ public abstract class FlowScreenFrame extends JFrame {
 
 	protected abstract void onInit();
 
-	public static void flow(ActionEvent event, String screenId, ScreenParameter parameter) {
+	public static void flow(ActionEvent event, String screenId, Parameter parameter) {
 		FlowScreenFrame frame = WindowUtils.getWindow(event, FlowScreenFrame.class);
 		if (frame != null) {
 			frame.flowScreen(screenId, parameter);
 		}
 	}
 
-	public static void flow(ActionEvent event, String screenId, ScreenParameter screenParam, String menuBarId,
-			ScreenParameter menuBarParam) {
+	public static void flow(ActionEvent event, String screenId, Parameter screenParam, String menuBarId,
+			Parameter menuBarParam) {
 		FlowScreenFrame frame = WindowUtils.getWindow(event, FlowScreenFrame.class);
 		if (frame != null) {
 			frame.flowMenuBar(menuBarId, menuBarParam);

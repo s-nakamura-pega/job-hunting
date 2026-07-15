@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 
 import sn.tools.swing.flow.annotation.Screen;
 import sn.tools.swing.flow.expansion.screen.CanvasScreenCreator;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
 import sn.tools.swing.game.background.ColorBackground;
 import sn.tools.swing.game.component.GameCanvas;
 import sn.tools.swing.game.object.GameObject;
@@ -41,7 +41,7 @@ public class MovingCircleGameScreen extends CanvasScreenCreator<GameCanvas> {
 	}
 
 	@Override
-	public void onDisplay(ScreenParameter parameter) {
+	public void onDisplay(Parameter parameter) {
 		super.onDisplay(parameter);
 		loopExecutor = Executors.newSingleThreadScheduledExecutor();
 		loopExecutor.scheduleAtFixedRate(() -> {

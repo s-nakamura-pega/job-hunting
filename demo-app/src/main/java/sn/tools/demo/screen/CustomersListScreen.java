@@ -19,8 +19,8 @@ import sn.tools.demo.entity.Customers;
 import sn.tools.swing.flow.annotation.Screen;
 import sn.tools.swing.flow.expansion.screen.XmlScreenCreator;
 import sn.tools.swing.flow.frame.FlowScreenFrame;
-import sn.tools.swing.flow.parameter.ScreenParameter;
-import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
+import sn.tools.swing.flow.parameter.SimpleParameter;
 import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
 
@@ -32,13 +32,13 @@ public class CustomersListScreen extends XmlScreenCreator {
 
 	@InjectAction("back")
 	public void form(ActionEvent event) {
-		FlowScreenFrame.flow(event, "customers_search", new SimpleScreenParameter());
+		FlowScreenFrame.flow(event, "customers_search", new SimpleParameter());
 	}
 
 	private AtomicBoolean hasData = new AtomicBoolean(false);
 
 	@Override
-	public void onEnter(ScreenParameter sp) {
+	public void onEnter(Parameter sp) {
 		Optional<String> name = sp.getParam("name", String.class);
 		Optional<String> address = sp.getParam("address", String.class);
 		Optional<String> tel = sp.getParam("tel", String.class);
@@ -74,7 +74,7 @@ public class CustomersListScreen extends XmlScreenCreator {
 	}
 
 	@Override
-	public void onDisplay(ScreenParameter parameter) {
+	public void onDisplay(Parameter parameter) {
 		if (!hasData.get()) {
 			JOptionPane.showMessageDialog(getCreation(), "条件に一致するデータが見つかりませんでした。");
 		}

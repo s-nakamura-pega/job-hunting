@@ -5,7 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 import sn.tools.swing.flow.creator.ScreenCreator;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
 import sn.tools.swing.game.component.AbstractCanvas;
 
 public abstract class CanvasScreenCreator<T extends AbstractCanvas> implements ScreenCreator {
@@ -22,11 +22,11 @@ public abstract class CanvasScreenCreator<T extends AbstractCanvas> implements S
 	}
 
 	@Override
-	public void onEnter(ScreenParameter parameter) {
+	public void onEnter(Parameter parameter) {
 	}
 
 	@Override
-	public void onDisplay(ScreenParameter parameter) {
+	public void onDisplay(Parameter parameter) {
 		canvas().startLoop();
 	}
 

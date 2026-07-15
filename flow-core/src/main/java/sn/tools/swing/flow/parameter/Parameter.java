@@ -2,7 +2,7 @@ package sn.tools.swing.flow.parameter;
 
 import java.util.Optional;
 
-public interface ScreenParameter {
+public interface Parameter {
 
 	Optional<?> getParam(String key);
 

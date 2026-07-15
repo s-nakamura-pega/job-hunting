@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class SimpleScreenParameter implements ScreenParameter {
+public class SimpleParameter implements Parameter {
 
 	private final Map<String, Object> params = new HashMap<>();
 

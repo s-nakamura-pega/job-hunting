@@ -10,7 +10,7 @@ import javax.swing.JMenuBar;
 import sn.tools.function.uncheck.Uncheck;
 import sn.tools.swing.flow.annotation.MenuBar;
 import sn.tools.swing.flow.creator.MenuBarCreator;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
 import sn.tools.swing.xml.create.CreateUtils;
 import sn.tools.swing.xml.injection.InjectionUtils;
 import sn.tools.swing.xml.menu.XmlMenuBar;
@@ -42,11 +42,11 @@ public abstract class XmlMenuBarCreator implements MenuBarCreator {
 	}
 
 	@Override
-	public void onEnter(ScreenParameter parameter) {
+	public void onEnter(Parameter parameter) {
 	}
 
 	@Override
-	public void onDisplay(ScreenParameter parameter) {
+	public void onDisplay(Parameter parameter) {
 	}
 
 	@Override

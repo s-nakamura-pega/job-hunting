@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 import sn.tools.function.uncheck.Uncheck;
 import sn.tools.swing.flow.creator.ScreenCreator;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
 import sn.tools.swing.util.ComponentUtils;
 import sn.tools.swing.xml.component.XmlComponent;
 import sn.tools.swing.xml.create.CreateUtils;
@@ -41,11 +41,11 @@ public abstract class XmlScreenCreator implements ScreenCreator {
 	}
 
 	@Override
-	public void onEnter(ScreenParameter parameter) {
+	public void onEnter(Parameter parameter) {
 	}
 
 	@Override
-	public void onDisplay(ScreenParameter parameter) {
+	public void onDisplay(Parameter parameter) {
 	}
 
 	@Override

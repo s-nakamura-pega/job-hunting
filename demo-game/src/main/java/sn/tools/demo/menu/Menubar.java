@@ -7,7 +7,7 @@ import javax.swing.JMenuItem;
 import sn.tools.swing.flow.annotation.MenuBar;
 import sn.tools.swing.flow.creator.MenuBarCreator;
 import sn.tools.swing.flow.frame.FlowScreenFrame;
-import sn.tools.swing.flow.parameter.ScreenParameter;
+import sn.tools.swing.flow.parameter.Parameter;
 
 @MenuBar("init")
 public class Menubar implements MenuBarCreator {
@@ -25,11 +25,11 @@ public class Menubar implements MenuBarCreator {
 	}
 
 	@Override
-	public void onEnter(ScreenParameter parameter) {
+	public void onEnter(Parameter parameter) {
 	}
 
 	@Override
-	public void onDisplay(ScreenParameter parameter) {
+	public void onDisplay(Parameter parameter) {
 	}
 
 	@Override

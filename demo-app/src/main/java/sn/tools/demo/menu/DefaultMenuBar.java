@@ -6,7 +6,7 @@ import java.net.URL;
 import sn.tools.swing.flow.annotation.MenuBar;
 import sn.tools.swing.flow.expansion.menu.XmlMenuBarCreator;
 import sn.tools.swing.flow.frame.FlowScreenFrame;
-import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.flow.parameter.SimpleParameter;
 import sn.tools.swing.xml.annotation.InjectAction;
 
 @MenuBar("init")
@@ -19,25 +19,25 @@ public class DefaultMenuBar extends XmlMenuBarCreator {
 
 	@InjectAction("init-screen")
 	public void flowInit(ActionEvent event) {
-		SimpleScreenParameter sp = new SimpleScreenParameter();
+		SimpleParameter sp = new SimpleParameter();
 		FlowScreenFrame.flow(event, "init", sp);
 	}
 
 	@InjectAction("next-screen")
 	public void flowNext(ActionEvent event) {
-		SimpleScreenParameter sp = new SimpleScreenParameter();
+		SimpleParameter sp = new SimpleParameter();
 		FlowScreenFrame.flow(event, "next", sp);
 	}
 
 	@InjectAction("customers_search-screen")
 	public void flowCustomersSearchScreen(ActionEvent event) {
-		SimpleScreenParameter sp = new SimpleScreenParameter();
+		SimpleParameter sp = new SimpleParameter();
 		FlowScreenFrame.flow(event, "customers_search", sp);
 	}
 
 	@InjectAction("customer_registration-screen")
 	public void flowCustomerRegistrationScreen(ActionEvent event) {
-		SimpleScreenParameter sp = new SimpleScreenParameter();
+		SimpleParameter sp = new SimpleParameter();
 		FlowScreenFrame.flow(event, "customer_registration", sp);
 	}
 

@@ -11,7 +11,7 @@ import javax.swing.JScrollPane;
 
 import sn.tools.swing.flow.controller.ScreenController.ScreenCatalog;
 import sn.tools.swing.flow.frame.FlowScreenFrame;
-import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.flow.parameter.SimpleParameter;
 import sn.tools.swing.util.ComponentUtils;
 import sn.tools.swing.util.WindowUtils;
 
@@ -37,7 +37,7 @@ public class MenuScreen extends JPanel {
 			btn.setToolTipText(sc.screenName());
 			btn.setPreferredSize(size);
 			btn.addActionListener(e -> {
-				FlowScreenFrame.flow(e, sc.id(), new SimpleScreenParameter());
+				FlowScreenFrame.flow(e, sc.id(), new SimpleParameter());
 			});
 			panel.add(btn);
 		});

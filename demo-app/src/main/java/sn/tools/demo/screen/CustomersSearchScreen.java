@@ -8,7 +8,7 @@ import javax.swing.JTextField;
 import sn.tools.swing.flow.annotation.Screen;
 import sn.tools.swing.flow.expansion.screen.XmlScreenCreator;
 import sn.tools.swing.flow.frame.FlowScreenFrame;
-import sn.tools.swing.flow.parameter.SimpleScreenParameter;
+import sn.tools.swing.flow.parameter.SimpleParameter;
 import sn.tools.swing.xml.annotation.InjectAction;
 import sn.tools.swing.xml.annotation.InjectComponent;
 
@@ -26,7 +26,7 @@ public class CustomersSearchScreen extends XmlScreenCreator {
 
 	@InjectAction("search")
 	public void form(ActionEvent event) {
-		SimpleScreenParameter sp = new SimpleScreenParameter();
+		SimpleParameter sp = new SimpleParameter();
 		sp.addParam("name", name.getText());
 		sp.addParam("address", address.getText());
 		sp.addParam("tel", tel.getText());
