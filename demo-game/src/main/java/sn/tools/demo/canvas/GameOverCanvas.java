@@ -10,15 +10,6 @@ public class GameOverCanvas extends AbstractCanvas {
 
 	private static final long serialVersionUID = 1L;
 
-	private boolean clicked = false;
-
-	@Override
-	protected void update() {
-		if (getMousePressed()) {
-			clicked = true;
-		}
-	}
-
 	@Override
 	protected void draw(Graphics g) {
 		g.setColor(Color.BLACK);
@@ -34,9 +25,8 @@ public class GameOverCanvas extends AbstractCanvas {
 	}
 
 	@Override
-	protected void afterUpdate() {
-		if (clicked) {
-			getPanel().flowScene("title");
-		}
+	protected void update() {
+		
 	}
+
 }

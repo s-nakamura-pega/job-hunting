@@ -30,6 +30,10 @@ public class GameCanvas extends AbstractCanvas {
 	public void addObject(GameObject obj) {
 		obj.init();
 		objects.add(obj);
+		addAllKeyAction(obj.getKeyActionList(this));
+		addAllMouseListener(obj.getMouseListenerList());
+		addAllMouseMotionListener(obj.getMouseMotionListenerList());
+		addAllMouseWheelListener(obj.getMouseWheelListenerList());
 	}
 
 	/** ★画面転換用：Canvas を完全クリア */
@@ -65,13 +69,16 @@ public class GameCanvas extends AbstractCanvas {
 			obj.update();
 		}
 
-		// 衝突判定（getBounds を廃止 → intersects に一本化）
+		// 衝突判定
 		checkCollisions();
 
 		// 衝突後処理
 		for (GameObject obj : snapshot) {
 			obj.postUpdate();
 		}
+
+		// ★画面外オブジェクトを destroy
+		removeOutOfBoundsObjects();
 
 		// destroy フラグのオブジェクトを remove
 		removeDestroyedObjects();
@@ -110,14 +117,35 @@ public class GameCanvas extends AbstractCanvas {
 		}
 	}
 
+	/** 画面外に出たオブジェクトを destroy する */
+	private void removeOutOfBoundsObjects() {
+		int w = getWidth();
+		int h = getHeight();
+		for (GameObject obj : objects) {
+			int x = obj.getX();
+			int y = obj.getY();
+			int ow = obj.getWidth();
+			int oh = obj.getHeight();
+			// 完全に画面外に出たら destroy
+			if (x + ow < 0 || x > w || y + oh < 0 || y > h) {
+				obj.destroy();
+			}
+		}
+	}
+
 	/** destroy フラグのオブジェクトを安全に削除 */
 	private void removeDestroyedObjects() {
 		objects.removeIf(obj -> {
 			if (obj.isDestroyed()) {
 				obj.onRemove();
+				removeAllKeyAction(obj.getKeyActionList(this));
+				removeAllMouseListener(obj.getMouseListenerList());
+				removeAllMouseMotionListener(obj.getMouseMotionListenerList());
+				removeAllMouseWheelListener(obj.getMouseWheelListenerList());
 				return true;
 			}
 			return false;
 		});
 	}
+
 }

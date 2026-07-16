@@ -13,15 +13,25 @@ import sn.tools.swing.util.definition.KeyModifiers;
 
 public interface KeyUtils {
 
+	public static void setKeyAndAction(KeyAction keyAction) {
+		setKeyAndAction(keyAction.component(), keyAction.actionMapKey(), keyAction.action, keyAction.targetCondition(),
+				keyAction.keyCode, keyAction.onKeyRelease, keyAction.modifiers);
+	}
+
 	public static void setKeyAndAction(JComponent component, Object actionMapKey, ActionListener action,
 			FocusTargetCondition targetCondition, int keyCode, KeyModifiers... modifiers) {
-		setKey(component, actionMapKey, targetCondition, keyCode, modifiers);
+		setKeyAndAction(component, actionMapKey, action, targetCondition, keyCode, false, modifiers);
+	}
+
+	public static void setKeyAndAction(JComponent component, Object actionMapKey, ActionListener action,
+			FocusTargetCondition targetCondition, int keyCode, boolean onKeyRelease, KeyModifiers... modifiers) {
+		setKey(component, actionMapKey, targetCondition, keyCode, onKeyRelease, modifiers);
 		setAction(component, actionMapKey, action);
 	}
 
 	public static void setKey(JComponent component, Object actionMapKey, FocusTargetCondition targetCondition,
-			int keyCode, KeyModifiers... modifiers) {
-		KeyStroke ks = KeyStroke.getKeyStroke(keyCode, KeyModifiers.of(modifiers));
+			int keyCode, boolean onKeyRelease, KeyModifiers... modifiers) {
+		KeyStroke ks = KeyStroke.getKeyStroke(keyCode, KeyModifiers.of(modifiers), onKeyRelease);
 		targetCondition.getTargetList().forEach(cond -> component.getInputMap(cond).put(ks, actionMapKey));
 	}
 
@@ -34,21 +44,35 @@ public interface KeyUtils {
 		});
 	}
 
+	public static void removeKeyAndAction(KeyAction keyAction) {
+		removeKeyAndAction(keyAction.component(), keyAction.actionMapKey(), keyAction.targetCondition(),
+				keyAction.keyCode, keyAction.onKeyRelease, keyAction.modifiers);
+	}
+
 	public static void removeKeyAndAction(JComponent component, Object actionMapKey,
 			FocusTargetCondition targetCondition, int keyCode, KeyModifiers... modifiers) {
-		removeKey(component, targetCondition, keyCode, modifiers);
+		removeKeyAndAction(component, actionMapKey, targetCondition, keyCode, false, modifiers);
+	}
+
+	public static void removeKeyAndAction(JComponent component, Object actionMapKey,
+			FocusTargetCondition targetCondition, int keyCode, boolean onKeyRelease, KeyModifiers... modifiers) {
+		removeKey(component, targetCondition, keyCode, onKeyRelease, modifiers);
 		removeAction(component, actionMapKey);
 	}
 
 	public static void removeKey(JComponent component, FocusTargetCondition targetCondition, int keyCode,
-			KeyModifiers... modifiers) {
-		KeyStroke ks = KeyStroke.getKeyStroke(keyCode, KeyModifiers.of(modifiers));
+			boolean onKeyRelease, KeyModifiers... modifiers) {
+		KeyStroke ks = KeyStroke.getKeyStroke(keyCode, KeyModifiers.of(modifiers), onKeyRelease);
 		targetCondition.getTargetList().forEach(cond -> component.getInputMap(cond).remove(ks));
 	}
 
 	public static void removeAction(JComponent component, Object actionMapKey) {
 		Objects.requireNonNull(actionMapKey, "actionMapKey must not be null");
 		component.getActionMap().remove(actionMapKey);
+	}
+
+	public static record KeyAction(JComponent component, Object actionMapKey, ActionListener action,
+			FocusTargetCondition targetCondition, int keyCode, boolean onKeyRelease, KeyModifiers... modifiers) {
 	}
 
 }

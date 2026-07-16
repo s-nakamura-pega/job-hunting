@@ -1,6 +1,15 @@
 package sn.tools.swing.game.object;
 
 import java.awt.Graphics;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JComponent;
+
+import sn.tools.swing.util.KeyUtils.KeyAction;
 
 public interface GameObject {
 
@@ -21,5 +30,29 @@ public interface GameObject {
 	void draw(Graphics g);
 
 	boolean intersects(GameObject other);
+
+	int getX();
+
+	int getY();
+
+	int getWidth();
+
+	int getHeight();
+
+	default List<KeyAction> getKeyActionList(JComponent component) {
+		return List.of();
+	}
+
+	default List<MouseListener> getMouseListenerList() {
+		return List.of();
+	}
+
+	default List<MouseMotionListener> getMouseMotionListenerList() {
+		return List.of();
+	}
+
+	default List<MouseWheelListener> getMouseWheelListenerList() {
+		return List.of();
+	}
 
 }

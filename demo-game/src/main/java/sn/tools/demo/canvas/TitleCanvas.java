@@ -10,13 +10,8 @@ public class TitleCanvas extends AbstractCanvas {
 
     private static final long serialVersionUID = 1L;
 
-	private boolean clicked = false;
-
     @Override
     protected void update() {
-        if (getMousePressed()) {
-            clicked = true;
-        }
     }
 
     @Override
@@ -30,13 +25,6 @@ public class TitleCanvas extends AbstractCanvas {
 
         g.setFont(new Font("Arial", Font.BOLD, 32));
         g.drawString("CLICK TO START", 120, 350);
-    }
-
-    @Override
-    protected void afterUpdate() {
-        if (clicked) {
-            getPanel().flowScene("game");
-        }
     }
 
 }

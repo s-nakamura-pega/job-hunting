@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.LayoutManager;
 import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
@@ -97,5 +98,11 @@ public abstract class GamePanel extends JPanel {
 	protected abstract String initSceneId();
 
 	protected abstract void onInit();
+
+	public static void flowScene(JComponent component, String screenId, Parameter parameter) {
+		if (component.getParent() instanceof GamePanel gp) {
+			gp.flowScene(screenId, parameter);
+		}
+	}
 
 }

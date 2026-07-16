@@ -167,14 +167,14 @@ public interface WindowUtils {
         };
         KeyUtils.setAction(rootPane, POPUPMENU_ACTION_MAP_KEY, kl);
         KeyUtils.setKey(rootPane, POPUPMENU_ACTION_MAP_KEY, FocusTargetCondition.WINDOW, KeyEvent.VK_F10,
-                KeyModifiers.SHIFT);
+                false, KeyModifiers.SHIFT);
         KeyUtils.setKey(rootPane, POPUPMENU_ACTION_MAP_KEY, FocusTargetCondition.WINDOW, KeyEvent.VK_CONTEXT_MENU,
-                KeyModifiers.NONE);
+        		false, KeyModifiers.NONE);
     }
 
     public static void removePopupMenu(JRootPane rootPane, JPopupMenu popupMenu) {
-        KeyUtils.removeKey(rootPane, FocusTargetCondition.WINDOW, KeyEvent.VK_F10, KeyModifiers.SHIFT);
-        KeyUtils.removeKey(rootPane, FocusTargetCondition.WINDOW, KeyEvent.VK_CONTEXT_MENU, KeyModifiers.NONE);
+        KeyUtils.removeKey(rootPane, FocusTargetCondition.WINDOW, KeyEvent.VK_F10, false, KeyModifiers.SHIFT);
+        KeyUtils.removeKey(rootPane, FocusTargetCondition.WINDOW, KeyEvent.VK_CONTEXT_MENU, false, KeyModifiers.NONE);
         KeyUtils.removeAction(rootPane, POPUPMENU_ACTION_MAP_KEY);
         Window window = SwingUtilities.getWindowAncestor(rootPane);
         Consumer<Component> consumer = comp -> {

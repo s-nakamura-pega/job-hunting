@@ -9,18 +9,13 @@ import sn.tools.swing.game.object.GameObject2D;
 
 public class Enemy extends GameObject2D {
 
-	private int x, y;
-
 	public Enemy(int x) {
-		this.x = x;
-		this.y = 0;
+		setX(x);
+		setY(0);
 	}
 
 	@Override
 	public void update() {
-		y += 4;
-		if (y > getCanvas().getHeight())
-			destroy();
 	}
 
 	@Override
@@ -31,11 +26,12 @@ public class Enemy extends GameObject2D {
 	@Override
 	public void draw(Graphics g) {
 		g.setColor(Color.RED);
-		g.fillOval(x, y, 30, 30);
+		g.fillOval(getX(), getY(), 30, 30);
 	}
 
 	@Override
 	protected Rectangle getRect() {
-		return new Rectangle(x, y, 30, 30);
+		return new Rectangle(getX(), getY(), 30, 30);
 	}
+
 }
