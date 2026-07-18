@@ -13,8 +13,8 @@ import sn.tools.swing.util.definition.KeyModifiers;
 
 public interface KeyUtils {
 
-	public static void setKeyAndAction(KeyAction keyAction) {
-		setKeyAndAction(keyAction.component(), keyAction.actionMapKey(), keyAction.action, keyAction.targetCondition(),
+	public static void setKeyAndAction(JComponent component, KeyAction keyAction) {
+		setKeyAndAction(component, keyAction.actionMapKey(), keyAction.action, keyAction.targetCondition(),
 				keyAction.keyCode, keyAction.onKeyRelease, keyAction.modifiers);
 	}
 
@@ -44,8 +44,8 @@ public interface KeyUtils {
 		});
 	}
 
-	public static void removeKeyAndAction(KeyAction keyAction) {
-		removeKeyAndAction(keyAction.component(), keyAction.actionMapKey(), keyAction.targetCondition(),
+	public static void removeKeyAndAction(JComponent component, KeyAction keyAction) {
+		removeKeyAndAction(component, keyAction.actionMapKey(), keyAction.targetCondition(),
 				keyAction.keyCode, keyAction.onKeyRelease, keyAction.modifiers);
 	}
 
@@ -71,7 +71,7 @@ public interface KeyUtils {
 		component.getActionMap().remove(actionMapKey);
 	}
 
-	public static record KeyAction(JComponent component, Object actionMapKey, ActionListener action,
+	public static record KeyAction(Object actionMapKey, ActionListener action,
 			FocusTargetCondition targetCondition, int keyCode, boolean onKeyRelease, KeyModifiers... modifiers) {
 	}
 

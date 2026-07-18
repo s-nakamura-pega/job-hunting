@@ -1,4 +1,4 @@
-package sn.tools.demo.object;
+package sn.tools.demo.shooting.object;
 
 import java.awt.Color;
 import java.awt.Graphics;

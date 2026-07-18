@@ -4,11 +4,9 @@ import java.awt.Graphics;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComponent;
-
+import sn.tools.swing.game.component.GameCanvas.GameCanvasFunction;
 import sn.tools.swing.util.KeyUtils.KeyAction;
 
 public interface GameObject {
@@ -39,7 +37,7 @@ public interface GameObject {
 
 	int getHeight();
 
-	default List<KeyAction> getKeyActionList(JComponent component) {
+	default List<KeyAction> getKeyActionList() {
 		return List.of();
 	}
 
@@ -54,5 +52,7 @@ public interface GameObject {
 	default List<MouseWheelListener> getMouseWheelListenerList() {
 		return List.of();
 	}
-
+	
+	void setGameCanvasFunction(GameCanvasFunction gameCanvasFunction);
+	
 }

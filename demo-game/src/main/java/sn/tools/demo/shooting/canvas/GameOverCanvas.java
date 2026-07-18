@@ -1,4 +1,4 @@
-package sn.tools.demo.canvas;
+package sn.tools.demo.shooting.canvas;
 
 import java.awt.Color;
 import java.awt.Font;

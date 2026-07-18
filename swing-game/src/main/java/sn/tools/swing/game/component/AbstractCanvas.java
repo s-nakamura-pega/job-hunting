@@ -44,7 +44,7 @@ public abstract class AbstractCanvas extends JComponent {
 		System.out.println("Loop Start");
 
 		// キー
-		keyActionList.forEach(KeyUtils::setKeyAndAction);
+		keyActionList.forEach(ak -> KeyUtils.setKeyAndAction(this, ak));
 
 		// マウス
 		mouseListenerList.forEach(this::addMouseListener);
@@ -65,7 +65,7 @@ public abstract class AbstractCanvas extends JComponent {
 			loopExecutor.shutdownNow();
 			loopExecutor = null;
 
-			keyActionList.forEach(KeyUtils::removeKeyAndAction);
+			keyActionList.forEach(ak -> KeyUtils.removeKeyAndAction(this, ak));
 
 			mouseListenerList.forEach(this::removeMouseListener);
 			mouseMotionListenerList.forEach(this::removeMouseMotionListener);
@@ -82,28 +82,28 @@ public abstract class AbstractCanvas extends JComponent {
 	public void addKeyAction(KeyAction action) {
 		keyActionList.add(action);
 		if (loopExecutor != null && !loopExecutor.isShutdown()) {
-			KeyUtils.setKeyAndAction(action);
+			KeyUtils.setKeyAndAction(this, action);
 		}
 	}
 
 	public void removeKeyAction(KeyAction action) {
 		keyActionList.remove(action);
 		if (loopExecutor != null && !loopExecutor.isShutdown()) {
-			KeyUtils.removeKeyAndAction(action);
+			KeyUtils.removeKeyAndAction(this, action);
 		}
 	}
 
 	public void addAllKeyAction(List<KeyAction> actionList) {
 		keyActionList.addAll(actionList);
 		if (loopExecutor != null && !loopExecutor.isShutdown()) {
-			actionList.forEach(KeyUtils::setKeyAndAction);
+			actionList.forEach(ak -> KeyUtils.setKeyAndAction(this, ak));
 		}
 	}
 
 	public void removeAllKeyAction(List<KeyAction> actionList) {
 		keyActionList.removeAll(actionList);
 		if (loopExecutor != null && !loopExecutor.isShutdown()) {
-			actionList.forEach(KeyUtils::removeKeyAndAction);
+			actionList.forEach(ak -> KeyUtils.removeKeyAndAction(this, ak));
 		}
 	}
 

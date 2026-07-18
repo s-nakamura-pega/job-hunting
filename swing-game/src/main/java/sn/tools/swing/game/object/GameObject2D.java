@@ -3,7 +3,11 @@ package sn.tools.swing.game.object;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+import sn.tools.swing.game.component.GameCanvas.GameCanvasFunction;
+
 public abstract class GameObject2D implements GameObject {
+
+	protected GameCanvasFunction gameCanvasFunction;
 
 	protected boolean destroyed = false;
 
@@ -98,6 +102,11 @@ public abstract class GameObject2D implements GameObject {
 
 	public void setHeight(int height) {
 		this.height = height;
+	}
+
+	@Override
+	public void setGameCanvasFunction(GameCanvasFunction gameCanvasFunction) {
+		this.gameCanvasFunction = gameCanvasFunction;
 	}
 
 }

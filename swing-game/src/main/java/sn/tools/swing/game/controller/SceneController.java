@@ -36,6 +36,9 @@ public class SceneController extends Controller<AbstractCanvas, Scene> {
 	}
 
 	public AbstractCanvas getCurrentCanvas() {
+		if (currentId.get() == null) {
+			return null;
+		}
 		return creatorMap.get(currentId.get()).getCreation();
 	}
 

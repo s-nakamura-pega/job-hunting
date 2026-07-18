@@ -1,8 +1,13 @@
 package sn.tools.swing.game.component;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import sn.tools.swing.game.background.Background;
 import sn.tools.swing.game.object.GameObject;
@@ -28,9 +33,11 @@ public class GameCanvas extends AbstractCanvas {
 
 	/** オブジェクト追加（init を呼ぶ） */
 	public void addObject(GameObject obj) {
+		obj.setGameCanvasFunction(new GameCanvasFunction(gb -> addObject(gb),
+				p -> objects.stream().filter(p::test).toList(), () -> new Dimension(getWidth(), getHeight())));
 		obj.init();
 		objects.add(obj);
-		addAllKeyAction(obj.getKeyActionList(this));
+		addAllKeyAction(obj.getKeyActionList());
 		addAllMouseListener(obj.getMouseListenerList());
 		addAllMouseMotionListener(obj.getMouseMotionListenerList());
 		addAllMouseWheelListener(obj.getMouseWheelListenerList());
@@ -138,7 +145,7 @@ public class GameCanvas extends AbstractCanvas {
 		objects.removeIf(obj -> {
 			if (obj.isDestroyed()) {
 				obj.onRemove();
-				removeAllKeyAction(obj.getKeyActionList(this));
+				removeAllKeyAction(obj.getKeyActionList());
 				removeAllMouseListener(obj.getMouseListenerList());
 				removeAllMouseMotionListener(obj.getMouseMotionListenerList());
 				removeAllMouseWheelListener(obj.getMouseWheelListenerList());
@@ -146,6 +153,10 @@ public class GameCanvas extends AbstractCanvas {
 			}
 			return false;
 		});
+	}
+
+	public static record GameCanvasFunction(Consumer<GameObject> addObject,
+			Function<Predicate<GameObject>, List<GameObject>> getObjects, Supplier<Dimension> getCanvasSize) {
 	}
 
 }

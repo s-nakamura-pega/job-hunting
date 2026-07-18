@@ -82,7 +82,7 @@ public abstract class GamePanel extends JPanel {
 
 	@Override
 	public void setLayout(LayoutManager mgr) {
-		throw new UnsupportedOperationException("GamePanel は setLayout を直接使えません。Layout は flowScene が管理します。");
+		super.setLayout(layout);
 	}
 
 	public void startGame() {

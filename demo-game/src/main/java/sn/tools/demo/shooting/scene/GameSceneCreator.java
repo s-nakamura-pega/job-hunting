@@ -1,6 +1,6 @@
-package sn.tools.demo.scene;
+package sn.tools.demo.shooting.scene;
 
-import sn.tools.demo.object.Player;
+import sn.tools.demo.shooting.object.Player;
 import sn.tools.swing.flow.parameter.Parameter;
 import sn.tools.swing.game.annotation.Scene;
 import sn.tools.swing.game.component.AbstractCanvas;
@@ -15,7 +15,6 @@ public class GameSceneCreator implements SceneCreator {
 	@Override
 	public void create() {
 		canvas = new GameCanvas();
-		canvas.addObject(new Player(b -> canvas.addObject(b)));
 	}
 
 	@Override
@@ -24,6 +23,7 @@ public class GameSceneCreator implements SceneCreator {
 
 	@Override
 	public void onDisplay(Parameter parameter) {
+		canvas.addObject(new Player());
 		canvas.startLoop();
 	}
 
