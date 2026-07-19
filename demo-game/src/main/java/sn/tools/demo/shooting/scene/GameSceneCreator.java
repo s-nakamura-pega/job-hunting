@@ -1,8 +1,13 @@
 package sn.tools.demo.shooting.scene;
 
+import java.awt.Color;
+import java.awt.Dimension;
+
 import sn.tools.demo.shooting.object.Player;
+import sn.tools.demo.shooting.panel.ShootingGamePanel;
 import sn.tools.swing.flow.parameter.Parameter;
 import sn.tools.swing.game.annotation.Scene;
+import sn.tools.swing.game.background.ColorBackground;
 import sn.tools.swing.game.component.AbstractCanvas;
 import sn.tools.swing.game.component.GameCanvas;
 import sn.tools.swing.game.creator.SceneCreator;
@@ -14,7 +19,15 @@ public class GameSceneCreator implements SceneCreator {
 
 	@Override
 	public void create() {
-		canvas = new GameCanvas();
+		canvas = new GameCanvas() {
+
+			@Override
+			protected Dimension monitorSize() {
+				return ShootingGamePanel.MONITOR_SIZE;
+			}
+
+		};
+		canvas.setBackground(new ColorBackground(new Color(30, 30, 60)));
 	}
 
 	@Override

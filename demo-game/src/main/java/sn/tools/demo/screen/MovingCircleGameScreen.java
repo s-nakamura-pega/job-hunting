@@ -1,6 +1,7 @@
 package sn.tools.demo.screen;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.concurrent.Executors;
@@ -20,7 +21,16 @@ import sn.tools.swing.game.object.GameObject2D;
 @Screen("moving-Circle")
 public class MovingCircleGameScreen extends CanvasScreenCreator<GameCanvas> {
 
-	private GameCanvas canvas = new GameCanvas();
+	private GameCanvas canvas = new GameCanvas() {
+
+		private final Dimension monitorSize = new Dimension(800, 400);
+
+		@Override
+		protected Dimension monitorSize() {
+			return monitorSize;
+		}
+
+	};
 
 	private ScheduledExecutorService loopExecutor;
 
@@ -37,7 +47,6 @@ public class MovingCircleGameScreen extends CanvasScreenCreator<GameCanvas> {
 	@Override
 	protected void OnInit() {
 		canvas.setBackground(new ColorBackground(new Color(30, 30, 60)));
-
 	}
 
 	@Override

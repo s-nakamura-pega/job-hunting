@@ -1,5 +1,6 @@
 package sn.tools.swing.game.component;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.MouseListener;
@@ -28,6 +29,12 @@ public abstract class AbstractCanvas extends JComponent {
 	private final List<MouseListener> mouseListenerList = new ArrayList<>();
 	private final List<MouseMotionListener> mouseMotionListenerList = new ArrayList<>();
 	private final List<MouseWheelListener> mouseWheelListenerList = new ArrayList<>();
+
+	public AbstractCanvas() {
+		setPreferredSize(monitorSize());
+		setMaximumSize(monitorSize());
+		setMinimumSize(monitorSize());
+	}
 
 	public void setFps(int fps) {
 		this.fps = fps;
@@ -213,4 +220,7 @@ public abstract class AbstractCanvas extends JComponent {
 	protected abstract void update();
 
 	protected abstract void draw(Graphics g);
+
+	protected abstract Dimension monitorSize();
+
 }

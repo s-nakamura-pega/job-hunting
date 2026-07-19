@@ -16,14 +16,12 @@ public class Player extends GameObject2D {
 
 	private final AtomicBoolean left = new AtomicBoolean(false);
 	private final AtomicBoolean right = new AtomicBoolean(false);
-	private final AtomicBoolean space = new AtomicBoolean(false);
 
 	@Override
 	public void init() {
-		Dimension size = gameCanvasFunction.getCanvasSize().get();
-		System.out.println(size);
-		setX(0);
-		setY(0);
+		Dimension monitorSize = gameCanvasFunction.getCanvasSize().get();
+		setX(monitorSize.width / 2 - 15);
+		setY(monitorSize.height - 45);
 	}
 
 	@Override
@@ -33,9 +31,6 @@ public class Player extends GameObject2D {
 		}
 		if (right.get()) {
 			setX(getX() + 5);
-		}
-		if (space.get()) {
-			gameCanvasFunction.addObject().accept(new Bullet(getX() + 10, getY()));
 		}
 	}
 
@@ -50,10 +45,8 @@ public class Player extends GameObject2D {
 						KeyEvent.VK_RIGHT, false, KeyModifiers.NONE),
 				new KeyAction("rightOff", _ -> right.set(false), FocusTargetCondition.WINDOW_AND_COMPONENT,
 						KeyEvent.VK_RIGHT, true, KeyModifiers.NONE),
-				new KeyAction("spaceOn", _ -> space.set(true), FocusTargetCondition.WINDOW_AND_COMPONENT,
-						KeyEvent.VK_SPACE, false, KeyModifiers.NONE),
-				new KeyAction("spaceOff", _ -> space.set(false), FocusTargetCondition.WINDOW_AND_COMPONENT,
-						KeyEvent.VK_SPACE, true, KeyModifiers.NONE));
+				new KeyAction("spaceOn", _ -> gameCanvasFunction.addObject().accept(new Bullet(getX() + 10, getY())),
+						FocusTargetCondition.WINDOW_AND_COMPONENT, KeyEvent.VK_SPACE, false, KeyModifiers.NONE));
 	}
 
 	@Override

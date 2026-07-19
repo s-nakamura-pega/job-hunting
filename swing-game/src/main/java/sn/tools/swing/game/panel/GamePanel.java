@@ -1,7 +1,7 @@
 package sn.tools.swing.game.panel;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridBagLayout;
 import java.awt.LayoutManager;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public abstract class GamePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private final BorderLayout layout = new BorderLayout();
+	private final GridBagLayout layout = new GridBagLayout();
 
 	private SceneController controller;
 
@@ -65,7 +65,7 @@ public abstract class GamePanel extends JPanel {
 		if (current != null) {
 			super.remove(current);
 		}
-		super.add(next, BorderLayout.CENTER);
+		super.add(next);
 		revalidate();
 		repaint();
 	}

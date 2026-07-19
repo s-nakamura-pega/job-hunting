@@ -1,9 +1,11 @@
 package sn.tools.demo.shooting.canvas;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import sn.tools.demo.shooting.panel.ShootingGamePanel;
 import sn.tools.swing.game.component.AbstractCanvas;
 
 public class GameOverCanvas extends AbstractCanvas {
@@ -26,7 +28,12 @@ public class GameOverCanvas extends AbstractCanvas {
 
 	@Override
 	protected void update() {
-		
+	}
+
+	@Override
+	protected Dimension monitorSize() {
+		System.out.println(true);
+		return ShootingGamePanel.MONITOR_SIZE;
 	}
 
 }
