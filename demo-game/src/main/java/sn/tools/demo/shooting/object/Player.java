@@ -7,6 +7,9 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import sn.tools.swing.flow.parameter.SimpleParameter;
+import sn.tools.swing.game.object.GameObject;
 import sn.tools.swing.game.object.GameObject2D;
 import sn.tools.swing.util.KeyUtils.KeyAction;
 import sn.tools.swing.util.definition.FocusTargetCondition;
@@ -27,10 +30,13 @@ public class Player extends GameObject2D {
 	@Override
 	public void update() {
 		if (left.get()) {
-			setX(getX() - 5);
+			int x = getX() - 5;
+			setX(x < 0 ? 0 : x);
 		}
 		if (right.get()) {
-			setX(getX() + 5);
+			int x = getX() + 5;
+			int canvasWidth = gameCanvasFunction.getCanvasSize().get().width - 30;
+			setX(canvasWidth < x ? canvasWidth : x);
 		}
 	}
 
@@ -52,12 +58,21 @@ public class Player extends GameObject2D {
 	@Override
 	public void draw(Graphics g) {
 		g.setColor(Color.CYAN);
-		g.fillRect(getX(), getY(), 30, 30);
+		g.fillRect(getX(), getY() + 5, 30, 25);
+		g.fillRect(getX() + 13, getY(), 4, 5);
 	}
 
 	@Override
 	protected Rectangle getRect() {
 		return new Rectangle(getX(), getY(), 30, 30);
+	}
+
+	@Override
+	public void onCollision(GameObject other) {
+		if (other instanceof EnemyBullet) {
+			destroy();
+			gameCanvasFunction.flow().accept("gameover", new SimpleParameter());
+		}
 	}
 
 }

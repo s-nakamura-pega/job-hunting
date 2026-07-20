@@ -48,7 +48,7 @@ public abstract class AbstractCanvas extends JComponent {
 		if (loopExecutor != null && !loopExecutor.isShutdown()) {
 			return;
 		}
-		System.out.println("Loop Start");
+		System.out.println(String.format("Loop Start. [%s]", getClass().getName()));
 
 		// キー
 		keyActionList.forEach(ak -> KeyUtils.setKeyAndAction(this, ak));
@@ -78,7 +78,7 @@ public abstract class AbstractCanvas extends JComponent {
 			mouseMotionListenerList.forEach(this::removeMouseMotionListener);
 			mouseWheelListenerList.forEach(this::removeMouseWheelListener);
 
-			System.out.println("Loop End");
+			System.out.println(String.format("Loop End. [%s]", getClass().getName()));
 		}
 	}
 

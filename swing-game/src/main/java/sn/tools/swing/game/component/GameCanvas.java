@@ -4,13 +4,16 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import sn.tools.swing.flow.parameter.Parameter;
 import sn.tools.swing.game.background.Background;
 import sn.tools.swing.game.object.GameObject;
+import sn.tools.swing.game.panel.FlowablePanel;
 
 public abstract class GameCanvas extends AbstractCanvas {
 
@@ -35,7 +38,14 @@ public abstract class GameCanvas extends AbstractCanvas {
 	/** オブジェクト追加（init を呼ぶ） */
 	public void addObject(GameObject obj) {
 		obj.setGameCanvasFunction(new GameCanvasFunction(gb -> addObject(gb),
-				p -> objects.stream().filter(p::test).toList(), () -> getPreferredSize()));
+				p -> objects.stream().filter(p::test).toList(), () -> getPreferredSize(), (id, param) -> {
+					if (getParent() instanceof FlowablePanel fp) {
+						fp.flowScene(id, param);
+					} else {
+						throw new UnsupportedOperationException(
+								"Flow is not supported. class=" + getParent().getClass());
+					}
+				}));
 		obj.init();
 		objects.add(obj);
 		addAllKeyAction(obj.getKeyActionList());
@@ -127,7 +137,8 @@ public abstract class GameCanvas extends AbstractCanvas {
 	}
 
 	public static record GameCanvasFunction(Consumer<GameObject> addObject,
-			Function<Predicate<GameObject>, List<GameObject>> getObjects, Supplier<Dimension> getCanvasSize) {
+			Function<Predicate<GameObject>, List<GameObject>> getObjects, Supplier<Dimension> getCanvasSize,
+			BiConsumer<String, Parameter> flow) {
 	}
 
 }

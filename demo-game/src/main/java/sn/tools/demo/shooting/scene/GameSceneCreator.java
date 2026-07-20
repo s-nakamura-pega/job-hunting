@@ -3,6 +3,7 @@ package sn.tools.demo.shooting.scene;
 import java.awt.Color;
 import java.awt.Dimension;
 
+import sn.tools.demo.shooting.object.Enemy;
 import sn.tools.demo.shooting.object.Player;
 import sn.tools.demo.shooting.panel.ShootingGamePanel;
 import sn.tools.swing.flow.parameter.Parameter;
@@ -13,7 +14,7 @@ import sn.tools.swing.game.component.GameCanvas;
 import sn.tools.swing.game.creator.SceneCreator;
 
 @Scene("game")
-public class GameSceneCreator implements SceneCreator {
+public class GameSceneCreator extends SceneCreator {
 
 	private GameCanvas canvas;
 
@@ -27,31 +28,22 @@ public class GameSceneCreator implements SceneCreator {
 			}
 
 		};
-		canvas.setBackground(new ColorBackground(new Color(30, 30, 60)));
-	}
-
-	@Override
-	public void onEnter(Parameter parameter) {
-	}
-
-	@Override
-	public void onDisplay(Parameter parameter) {
-		canvas.addObject(new Player());
-		canvas.startLoop();
-	}
-
-	@Override
-	public void onExit() {
-		canvas.stopLoop();
-		canvas.clear();
-	}
-
-	@Override
-	public void reload() {
 	}
 
 	@Override
 	public AbstractCanvas getCreation() {
 		return canvas;
 	}
+
+	@Override
+	protected void init(Parameter parameter) {
+		canvas.setBackground(new ColorBackground(new Color(30, 30, 60)));
+		canvas.addObject(new Player());
+		canvas.addObject(new Enemy());
+	}
+
+	@Override
+	protected void cleanup() {
+	}
+
 }

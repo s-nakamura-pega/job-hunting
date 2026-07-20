@@ -17,7 +17,7 @@ import sn.tools.swing.game.component.AbstractCanvas;
 import sn.tools.swing.game.context.SceneContext;
 import sn.tools.swing.game.controller.SceneController;
 
-public abstract class GamePanel extends JPanel {
+public abstract class GamePanel extends JPanel implements FlowablePanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,8 +56,8 @@ public abstract class GamePanel extends JPanel {
 		worker.execute();
 	}
 
-	public void flowScene(String screenId, Parameter parameter) {
-		controller.flow(screenId, new SceneContext(this, parameter));
+	public void flowScene(String sceneId, Parameter parameter) {
+		controller.flow(sceneId, new SceneContext(this, parameter));
 	}
 
 	public void flowScene(AbstractCanvas next) {
@@ -99,9 +99,9 @@ public abstract class GamePanel extends JPanel {
 
 	protected abstract void onInit();
 
-	public static void flowScene(JComponent component, String screenId, Parameter parameter) {
+	public static void flowScene(JComponent component, String sceneId, Parameter parameter) {
 		if (component.getParent() instanceof GamePanel gp) {
-			gp.flowScene(screenId, parameter);
+			gp.flowScene(sceneId, parameter);
 		}
 	}
 

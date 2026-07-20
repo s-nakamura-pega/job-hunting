@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import sn.tools.demo.shooting.panel.ShootingGamePanel;
 import sn.tools.swing.game.component.AbstractCanvas;
 
-public class GameOverCanvas extends AbstractCanvas {
+public class GameClearCanvas extends AbstractCanvas {
 
 	private static final long serialVersionUID = 1L;
 
@@ -17,9 +17,9 @@ public class GameOverCanvas extends AbstractCanvas {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-		g.setColor(Color.RED);
+		g.setColor(Color.GREEN);
 		g.setFont(new Font("Arial", Font.BOLD, 48));
-		g.drawString("GAME OVER", 120, 200);
+		g.drawString("GAME CLEAR", 120, 200);
 
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Arial", Font.BOLD, 32));
@@ -34,5 +34,4 @@ public class GameOverCanvas extends AbstractCanvas {
 	protected Dimension monitorSize() {
 		return ShootingGamePanel.MONITOR_SIZE;
 	}
-
 }

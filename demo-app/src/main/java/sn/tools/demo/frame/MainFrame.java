@@ -32,7 +32,7 @@ public class MainFrame extends FlowScreenFrame {
 
 	@Override
 	protected void onInit() {
-		System.out.println("fram.onInit");
+		System.out.println("frame.onInit");
 	}
 
 }

@@ -12,7 +12,7 @@ import sn.tools.swing.game.creator.SceneCreator;
 import sn.tools.swing.game.panel.GamePanel;
 
 @Scene("gameover")
-public class GameOverSceneCreator implements SceneCreator {
+public class GameOverSceneCreator extends SceneCreator {
 
 	private GameOverCanvas canvas;
 
@@ -30,25 +30,16 @@ public class GameOverSceneCreator implements SceneCreator {
 	}
 
 	@Override
-	public void onEnter(Parameter parameter) {
-	}
-
-	@Override
-	public void onDisplay(Parameter parameter) {
-		canvas.startLoop();
-	}
-
-	@Override
-	public void onExit() {
-		canvas.stopLoop();
-	}
-
-	@Override
-	public void reload() {
-	}
-
-	@Override
 	public AbstractCanvas getCreation() {
 		return canvas;
 	}
+
+	@Override
+	protected void init(Parameter parameter) {
+	}
+
+	@Override
+	protected void cleanup() {
+	}
+
 }
