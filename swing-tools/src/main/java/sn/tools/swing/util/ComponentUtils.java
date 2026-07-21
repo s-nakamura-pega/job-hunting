@@ -25,6 +25,15 @@ import sn.tools.swing.util.definition.KeyModifiers;
 
 public interface ComponentUtils {
 
+	public static BufferedImage componentToImage(JComponent comp, Dimension size) {
+		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = img.createGraphics();
+		comp.setSize(size);
+		comp.paint(g2);
+		g2.dispose();
+		return img;
+	}
+
 	public static BufferedImage panelToImage(JPanel panel, Dimension size) {
 		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = img.createGraphics();
@@ -38,8 +47,8 @@ public interface ComponentUtils {
 	public static void recursiveDoLayout(Container container) {
 		container.doLayout();
 		for (Component comp : container.getComponents()) {
-			if (comp instanceof Container) {
-				recursiveDoLayout((Container) comp);
+			if (comp instanceof Container cont) {
+				recursiveDoLayout(cont);
 			}
 		}
 	}
