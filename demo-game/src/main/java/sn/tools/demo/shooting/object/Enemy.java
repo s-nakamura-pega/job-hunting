@@ -45,7 +45,14 @@ public class Enemy extends GameObject2D {
 	public void onCollision(GameObject other) {
 		if (other instanceof Bullet) {
 			destroy();
-			gameCanvasFunction.flow().accept("gameclear", new SimpleParameter());
+			if (gameCanvasFunction.getObjects().apply(go -> {
+				if (go instanceof Enemy enemy && !enemy.isDestroyed()) {
+					return true;
+				}
+				return false;
+			}).isEmpty()) {
+				gameCanvasFunction.flow().accept("gameclear", new SimpleParameter());
+			}
 		}
 	}
 

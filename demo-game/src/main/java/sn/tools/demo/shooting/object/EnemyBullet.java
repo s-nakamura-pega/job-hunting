@@ -9,8 +9,6 @@ import sn.tools.swing.game.object.GameObject2D;
 
 public class EnemyBullet extends GameObject2D {
 
-	private static final int DY = 10; // 敵弾の速度
-
 	public EnemyBullet(int x, int y) {
 		setX(x);
 		setY(y);
@@ -18,7 +16,7 @@ public class EnemyBullet extends GameObject2D {
 
 	@Override
 	public void update() {
-		setY(getY() + DY);
+		setY(getY() + 10);
 
 		int height = gameCanvasFunction.getCanvasSize().get().height;
 		if (getY() > height) {

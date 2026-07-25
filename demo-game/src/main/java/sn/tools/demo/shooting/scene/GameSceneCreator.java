@@ -40,6 +40,7 @@ public class GameSceneCreator extends SceneCreator {
 		canvas.setBackground(new ColorBackground(new Color(30, 30, 60)));
 		canvas.addObject(new Player());
 		canvas.addObject(new Enemy());
+		canvas.addObject(new Enemy());
 	}
 
 	@Override
