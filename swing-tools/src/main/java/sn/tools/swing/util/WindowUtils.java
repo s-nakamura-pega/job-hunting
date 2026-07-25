@@ -73,7 +73,7 @@ public interface WindowUtils {
                 return getWindow(event, (Class<T>) clazz);
             }
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return null;
     }

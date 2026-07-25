@@ -74,11 +74,11 @@ public abstract class FlowScreenFrame extends JFrame {
 						}
 						onInit();
 					} catch (Exception ex) {
-						ex.printStackTrace();
 						Exception root = ExceptionUtils.getRootCause(ex);
 						JOptionPane.showMessageDialog(FlowScreenFrame.this, root.getMessage(), "Error",
 								JOptionPane.ERROR_MESSAGE);
 						FlowScreenFrame.this.dispose();
+						throw new RuntimeException(ex);
 					}
 				});
 				timer.setRepeats(false);
