@@ -9,20 +9,19 @@ import sn.tools.swing.game.object.GameObject2D;
 
 public class EnemyBullet extends GameObject2D {
 
-	private int x, y;
-	private final int dy = 8; // 敵弾の速度
+	private static final int DY = 10; // 敵弾の速度
 
 	public EnemyBullet(int x, int y) {
-		this.x = x;
-		this.y = y;
+		setX(x);
+		setY(y);
 	}
 
 	@Override
 	public void update() {
-		y += dy;
+		setY(getY() + DY);
 
 		int height = gameCanvasFunction.getCanvasSize().get().height;
-		if (y > height) {
+		if (getY() > height) {
 			destroy();
 		}
 	}
@@ -35,11 +34,12 @@ public class EnemyBullet extends GameObject2D {
 	@Override
 	public void draw(Graphics g) {
 		g.setColor(Color.PINK);
-		g.fillOval(x, y, 10, 10);
+		g.fillOval(getX(), getY(), 10, 10);
 	}
 
 	@Override
 	protected Rectangle getRect() {
-		return new Rectangle(x, y, 10, 10);
+		return new Rectangle(getX(), getY(), 10, 10);
 	}
+
 }

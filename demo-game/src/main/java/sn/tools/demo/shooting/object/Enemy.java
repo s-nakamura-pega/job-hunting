@@ -13,7 +13,7 @@ public class Enemy extends GameObject2D {
 
 	private int dx = 2; // 横移動速度
 	private long lastShot = 0; // 最後に弾を撃った時間
-	private final long shotInterval = 800; // 800msごとに攻撃
+	private final long shotInterval = 300; // 800msごとに攻撃
 
 	@Override
 	public void init() {

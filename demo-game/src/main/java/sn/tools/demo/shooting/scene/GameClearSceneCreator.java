@@ -1,5 +1,6 @@
 package sn.tools.demo.shooting.scene;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -10,34 +11,42 @@ import sn.tools.swing.game.annotation.Scene;
 import sn.tools.swing.game.component.AbstractCanvas;
 import sn.tools.swing.game.creator.SceneCreator;
 import sn.tools.swing.game.panel.GamePanel;
+import sn.tools.swing.util.KeyUtils.KeyAction;
+import sn.tools.swing.util.definition.FocusTargetCondition;
+import sn.tools.swing.util.definition.KeyModifiers;
 
 @Scene("gameclear")
 public class GameClearSceneCreator extends SceneCreator {
 
-    private GameClearCanvas canvas;
+	private GameClearCanvas canvas;
 
-    @Override
-    public void create() {
-        canvas = new GameClearCanvas();
+	@Override
+	public void create() {
+		canvas = new GameClearCanvas();
+		canvas.addKeyAction(new KeyAction("flowTitle", _ -> flowTitle(), FocusTargetCondition.WINDOW_AND_COMPONENT,
+				KeyEvent.VK_ENTER, false, KeyModifiers.NONE));
+		canvas.addMouseListenerEx(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				flowTitle();
+			}
+		});
+	}
 
-        canvas.addMouseListenerEx(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                GamePanel.flowScene(canvas, "title", new SimpleParameter());
-            }
-        });
-    }
+	private void flowTitle() {
+		GamePanel.flowScene(canvas, "title", new SimpleParameter());
+	}
 
-    @Override
-    public AbstractCanvas getCreation() {
-        return canvas;
-    }
+	@Override
+	public AbstractCanvas getCreation() {
+		return canvas;
+	}
 
-    @Override
-    protected void init(Parameter parameter) {
-    }
+	@Override
+	protected void init(Parameter parameter) {
+	}
 
-    @Override
-    protected void cleanup() {
-    }
+	@Override
+	protected void cleanup() {
+	}
 }
