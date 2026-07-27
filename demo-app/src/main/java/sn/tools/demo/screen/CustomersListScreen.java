@@ -76,7 +76,7 @@ public class CustomersListScreen extends XmlScreenCreator {
 	@Override
 	public void onDisplay(Parameter parameter) {
 		if (!hasData.get()) {
-			JOptionPane.showMessageDialog(getCreation(), "条件に一致するデータが見つかりませんでした。");
+			JOptionPane.showMessageDialog(getCreation(), "No data matching the criteria was found.");
 		}
 	}
 

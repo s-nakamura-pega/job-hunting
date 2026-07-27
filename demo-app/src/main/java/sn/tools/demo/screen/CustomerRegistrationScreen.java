@@ -32,20 +32,25 @@ public class CustomerRegistrationScreen extends XmlScreenCreator {
 	@InjectAction("register")
 	public void form(ActionEvent event) {
 		Window window = WindowUtils.getWindow(event);
+		String nameText =name.getText(); 
+		if (nameText.isBlank()) {			
+			JOptionPane.showMessageDialog(window, "Customer is not entered.", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		Customers customers = new Customers();
-		customers.name = name.getText();
+		customers.name = nameText;
 		customers.address = address.getText();
 		customers.phone = tel.getText();
 		customers.createdAt = new Date(new java.util.Date().getTime()).toString();
 		try {
 			DBManager.getDBExecutor().insert(customers);
-			JOptionPane.showMessageDialog(window, "登録が完了しました。", "登録完了", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(window, "Registration completed.", "Successful", JOptionPane.INFORMATION_MESSAGE);
 			name.setText(null);
 			address.setText(null);
 			tel.setText(null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(window, "登録に失敗しました。", "登録失敗", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(window, "Registration failed", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
