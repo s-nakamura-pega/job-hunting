@@ -1,4 +1,4 @@
-# Swing XML UI Framework
+# Swing Framework – Lightweight UI + DB Layer for Desktop Apps
 A lightweight XML-driven UI framework for Java Swing.  
 Declarative UI, clean architecture, and fast screen development.
 
@@ -16,7 +16,7 @@ This framework provides:
 - **Creator pattern for XML binding**
 - **Lightweight, dependency-free architecture**
 
-Swing を JavaFX の FXML のように宣言的に扱えるようにするためのフレームワーク。
+A framework that enables Swing to be used declaratively through XML.
 
 ---
 
@@ -24,10 +24,10 @@ Swing を JavaFX の FXML のように宣言的に扱えるようにするため
 
 ### ✔ XML UI DSL
 \<flow-panel align="center" hgap="10"\>  
-  \<label\>ユーザー名\</label\>  
+  \<label\>Name\</label\>  
   \<text id="username"/\>  
   \<password id="password"/\>  
-  \<action-button action="LoginController#login"\>ログイン\</action-button\>  
+  \<action-button action="LoginController#login"\>Login\</action-button\>  
 \</flow-panel\>
 
 ### ✔ DI-like Component Mapping
@@ -37,17 +37,15 @@ XmlComponent username = componentMap.get("username");
 FlowScreenFrame.flow(actionEvent, "login-screen", params);
 
 ### ✔ MenuBar DSL  
-メニューも XML で定義可能。
+The framework allows Swing menus to be defined declaratively in XML as well.
 
 ### ✔ Undo / KeyUtils / Popup  
-UX を改善するユーティリティ群。
+A collection of utilities that enhance UX across Swing-based applications.
 
 ---
 
 ## 📦 Installation
-Java 25 以上で動作。
-
-（Maven 化していない場合は jar を直接追加）
+The framework runs on Java 25 and leverages its updated language and runtime features.
 
 ---
 
@@ -75,31 +73,31 @@ Java 25 以上で動作。
 
 ## 🧱 Example: Flow Panel
 \<flow-panel align="center" hgap="8" vgap="8"\>  
-  \<label h-align="center"\>名前\</label\>  
+  \<label h-align="center"\>Name\</label\>  
   \<text id="name"/\>  
-  \<action-button action="MainWindow#submit"\>送信\</action-button\>  
+  \<action-button action="MainWindow#submit"\>Send\</action-button\>  
 \</flow-panel\>
 
 ---
 
 ## 🧱 Example: Tabs
 \<tabs\>  
-  \<tab title="ユーザー"\>  
+  \<tab title="User"\>  
     \<vbox-panel\>  
-      \<label\>ユーザー一覧\</label\>  
+      \<label\>User List\</label\>  
       \<list id="userList"\>  
-        \<item\>中村\</item\>  
-        \<item\>佐藤\</item\>  
+        \<item\>Nakamura\</item\>  
+        \<item\>sato\</item\>  
       \</list\>  
     \</vbox-panel\>  
   \</tab\>  
 
-  \<tab title="設定"\>  
+  \<tab title="Settings"\>  
     \<grid-panel rows="2" cols="2"\>  
-      \<label\>テーマ\</label\>  
+      \<label\>Theme\</label\>  
       \<combobox\>  
-        \<item\>ライト\</item\>  
-        \<item\>ダーク\</item\>  
+        \<item\>Light\</item\>  
+        \<item\>Dark\</item\>  
       \</combobox\>  
     \</grid-panel\>  
   \</tab\>  
@@ -110,10 +108,10 @@ Java 25 以上で動作。
 ## 🧩 Action Binding
 
 ### Static method
-\<action-button action="LoginController#login"\>ログイン\</action-button\>
+\<action-button action="LoginController#login"\>Login\</action-button\>
 
 ### Window method
-\<action-button action="login"\>ログイン\</action-button\>
+\<action-button action="login"\>Login\</action-button\>
 
 ---
 
@@ -122,7 +120,7 @@ SimpleScreenParameter param = new SimpleScreenParameter();
 param.addParam("userId", 10);  
 flowController.move("user-detail", param);
 
-画面側：  
+On the screen side:
 parameter.getParam("userId", Integer.class).ifPresent(id -> ...);
 
 ---
@@ -158,11 +156,11 @@ sn.tools.xml.bind
 ---
 
 ## 🧪 Sample Application
-public class SystemMain {
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
-	}
-}
+### demo-app
+The demo can be launched from the sn.tools.demo.system.SystemMain class.
+
+### demo-game
+The demo can be launched from the sn.tools.demo.system.SystemMain class.
 
 ---
 
