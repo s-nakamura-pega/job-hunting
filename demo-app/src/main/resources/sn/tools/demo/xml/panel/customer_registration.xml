@@ -2,14 +2,14 @@
 <screen>
 	<border-panel>
 		<north>
-			<label h-align="center" font-size="16">顧客登録</label>
+			<label h-align="center" font-size="16">Customer Registration</label>
 		</north>
 		<center>
 			<flow-panel baseline="true" vgap="50">
 			<grid-panel cols="2" rows="3" vgap="10" hgap="20">
-				<label h-align="right" font-style="BOLD">顧客名</label>
+				<label h-align="right" font-style="BOLD">Customer</label>
 				<text id="name" width="300"></text>
-				<label h-align="right" font-style="BOLD">住所</label>
+				<label h-align="right" font-style="BOLD">Address</label>
 				<text id="address" width="300"></text>
 				<label h-align="right" font-style="BOLD">TEL</label>
 				<text id="tel" width="300"></text>
@@ -18,7 +18,7 @@
 		</center>
 		<south>
 			<flow-panel >
-				<button id="register" align="center">登録</button>
+				<button id="register" align="center">Registration</button>
 			</flow-panel>
 		</south>
 	</border-panel>

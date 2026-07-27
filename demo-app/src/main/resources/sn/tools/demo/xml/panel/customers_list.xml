@@ -2,21 +2,21 @@
 <screen>
 	<border-panel>
 		<north>
-			<label h-align="center" font-size="16">検索結果</label>
+			<label h-align="center" font-size="16">Search Results</label>
 		</north>
 		<center>
 			<scroll>
 				<table id="list">
 					<column>ID</column>
-					<column>顧客名</column>
-					<column>住所</column>
-					<column>電話番号</column>
+					<column>Customer</column>
+					<column>Address</column>
+					<column>TEL</column>
 				</table>
 			</scroll>
 		</center>
 		<south>
 			<flow-panel >
-				<button id="back" align="center">検索画面へ戻る</button>
+				<button id="back" align="center">Return to Search</button>
 			</flow-panel>
 		</south>
 	</border-panel>
