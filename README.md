@@ -159,7 +159,10 @@ sn.tools.xml.bind
 
 ## 🧪 Sample Application
 ### demo-app
+The demo can be launched from the sn.tools.demo.system.SystemMain class.
+
 ### demo-game
+The demo can be launched from the sn.tools.demo.system.SystemMain class.
 
 ---
 
