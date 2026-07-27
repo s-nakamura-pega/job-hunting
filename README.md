@@ -158,11 +158,8 @@ sn.tools.xml.bind
 ---
 
 ## 🧪 Sample Application
-public class SystemMain {
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
-	}
-}
+### demo-app
+### demo-game
 
 ---
 
