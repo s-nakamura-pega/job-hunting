@@ -1,4 +1,4 @@
-# Swing XML UI Framework
+# Swing Framework – Lightweight UI + DB Layer for Desktop Apps
 A lightweight XML-driven UI framework for Java Swing.  
 Declarative UI, clean architecture, and fast screen development.
 
